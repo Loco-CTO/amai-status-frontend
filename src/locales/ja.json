@@ -1,0 +1,61 @@
+{
+	"site": {
+		"title": "Project 甘い | ステータス",
+		"description": "サービスステータス監視ページ"
+	},
+	"page": {
+		"title": "ステータス"
+	},
+	"status": {
+		"up": "すべてのシステムが正常に動作しています",
+		"degraded": "システムのパフォーマンスが低下しています",
+		"down": "1つ以上のサービスが利用できません"
+	},
+	"status_indicator": {
+		"up": "正常",
+		"degraded": "パフォーマンス低下",
+		"down": "障害"
+	},
+	"header": {
+		"loading": "読み込み中...",
+		"ready": "準備完了",
+		"connection_error": "バックエンドに接続できません。",
+		"ensure_server": "サーバーが以下で実行されていることを確認してください:",
+		"title": "ステータス"
+	},
+	"footer": {
+		"last_updated": "最終更新:",
+		"next_update": "次の更新:",
+		"seconds": "秒後",
+		"api_documentation": "API ドキュメント",
+		"rss_feed": "RSS フィード"
+	},
+	"uptime": "稼働時間",
+	"time_range": {
+		"all": "すべて",
+		"hour": "1時間",
+		"day": "1日",
+		"week": "1週間"
+	},
+	"heartbeat": {
+		"ping": "ピング",
+		"avg_ping": "平均ピング",
+		"samples": "サンプル"
+	},
+	"error": {
+		"title": "エラーが発生しました",
+		"description": "ページを読み込み中にエラーが発生しました。",
+		"button": "もう一度試す",
+		"retry": "再試行",
+		"backend_unreachable_title": "バックエンドが利用できません",
+		"backend_unreachable_subtitle": "バックエンドサーバーに接続できません",
+		"backend_unreachable_help": "上記のアドレスでバックエンドサーバーが実行されており、アクセス可能であることを確認してください。",
+		"backend_address": "バックエンドアドレス:"
+	},
+	"notFound": {
+		"title": "ページが見つかりません",
+		"description": "お探しのページは存在しません。",
+		"code": "404",
+		"button": "ホームに戻る"
+	}
+}

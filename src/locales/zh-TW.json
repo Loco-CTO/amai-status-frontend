@@ -1,0 +1,61 @@
+{
+	"site": {
+		"title": "Project 甘い | 狀態",
+		"description": "服務狀態監控頁面"
+	},
+	"page": {
+		"title": "狀態"
+	},
+	"status": {
+		"up": "所有系統正常運作",
+		"degraded": "系統性能已降低",
+		"down": "一個或多個服務無法使用"
+	},
+	"status_indicator": {
+		"up": "正常",
+		"degraded": "性能降低",
+		"down": "故障"
+	},
+	"header": {
+		"loading": "載入中...",
+		"ready": "準備就緒",
+		"connection_error": "無法連接到後端。",
+		"ensure_server": "確保伺服器運行於:",
+		"title": "狀態"
+	},
+	"footer": {
+		"last_updated": "最後更新:",
+		"next_update": "下次更新:",
+		"seconds": "秒後",
+		"api_documentation": "API 文檔",
+		"rss_feed": "RSS 訂閱"
+	},
+	"uptime": "運行時間",
+	"time_range": {
+		"all": "全部",
+		"hour": "小時",
+		"day": "天",
+		"week": "週"
+	},
+	"heartbeat": {
+		"ping": "延遲",
+		"avg_ping": "平均延遲",
+		"samples": "樣本"
+	},
+	"error": {
+		"title": "發生錯誤",
+		"description": "載入頁面時發生錯誤。",
+		"button": "重試",
+		"retry": "重試",
+		"backend_unreachable_title": "後端不可用",
+		"backend_unreachable_subtitle": "無法連接到後端服務器",
+		"backend_unreachable_help": "請確保後端服務器在上面顯示的地址上運行並且可訪問。",
+		"backend_address": "後端地址:"
+	},
+	"notFound": {
+		"title": "頁面未找到",
+		"description": "您要查找的頁面不存在。",
+		"code": "404",
+		"button": "返回首頁"
+	}
+}

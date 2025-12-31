@@ -1,0 +1,61 @@
+{
+	"site": {
+		"title": "Project 甘い | 状态",
+		"description": "服务状态监控页面"
+	},
+	"page": {
+		"title": "状态"
+	},
+	"status": {
+		"up": "所有系统正常运行",
+		"degraded": "系统性能已降低",
+		"down": "一个或多个服务不可用"
+	},
+	"status_indicator": {
+		"up": "正常",
+		"degraded": "性能降低",
+		"down": "故障"
+	},
+	"header": {
+		"loading": "加载中...",
+		"ready": "就绪",
+		"connection_error": "无法连接到后端。",
+		"ensure_server": "确保服务器运行在:",
+		"title": "状态"
+	},
+	"footer": {
+		"last_updated": "最后更新:",
+		"next_update": "下次更新:",
+		"seconds": "秒后",
+		"api_documentation": "API 文档",
+		"rss_feed": "RSS 订阅"
+	},
+	"uptime": "运行时间",
+	"time_range": {
+		"all": "全部",
+		"hour": "小时",
+		"day": "天",
+		"week": "周"
+	},
+	"heartbeat": {
+		"ping": "延迟",
+		"avg_ping": "平均延迟",
+		"samples": "样本"
+	},
+	"error": {
+		"title": "出错了",
+		"description": "加载页面时出现错误。",
+		"button": "重试",
+		"retry": "重试",
+		"backend_unreachable_title": "后端不可用",
+		"backend_unreachable_subtitle": "无法连接到后端服务器",
+		"backend_unreachable_help": "请确保后端服务器在上面显示的地址上运行并且可访问。",
+		"backend_address": "后端地址:"
+	},
+	"notFound": {
+		"title": "页面未找到",
+		"description": "您要查找的页面不存在。",
+		"code": "404",
+		"button": "返回首页"
+	}
+}

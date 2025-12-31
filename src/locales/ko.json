@@ -1,0 +1,61 @@
+{
+	"site": {
+		"title": "Project 甘い | 상태",
+		"description": "서비스 상태 모니터링 페이지"
+	},
+	"page": {
+		"title": "상태"
+	},
+	"status": {
+		"up": "모든 시스템이 정상 작동합니다",
+		"degraded": "시스템 성능이 저하되었습니다",
+		"down": "하나 이상의 서비스를 사용할 수 없습니다"
+	},
+	"status_indicator": {
+		"up": "정상",
+		"degraded": "성능 저하",
+		"down": "장애"
+	},
+	"header": {
+		"loading": "로딩 중...",
+		"ready": "준비 완료",
+		"connection_error": "백엔드에 연결할 수 없습니다.",
+		"ensure_server": "서버가 다음 주소에서 실행 중인지 확인하세요:",
+		"title": "상태"
+	},
+	"footer": {
+		"last_updated": "마지막 업데이트:",
+		"next_update": "다음 업데이트:",
+		"seconds": "초 후",
+		"api_documentation": "API 문서",
+		"rss_feed": "RSS 피드"
+	},
+	"uptime": "가동 시간",
+	"time_range": {
+		"all": "전체",
+		"hour": "시간",
+		"day": "날짜",
+		"week": "주"
+	},
+	"heartbeat": {
+		"ping": "핑",
+		"avg_ping": "평균 핑",
+		"samples": "샘플"
+	},
+	"error": {
+		"title": "오류가 발생했습니다",
+		"description": "페이지를 로드하는 중에 오류가 발생했습니다.",
+		"button": "다시 시도",
+		"retry": "재시도",
+		"backend_unreachable_title": "백엔드를 사용할 수 없습니다",
+		"backend_unreachable_subtitle": "백엔드 서버에 연결할 수 없습니다",
+		"backend_unreachable_help": "위에 표시된 주소에서 백엔드 서버가 실행 중이고 액세스 가능한지 확인하세요.",
+		"backend_address": "백엔드 주소:"
+	},
+	"notFound": {
+		"title": "페이지를 찾을 수 없습니다",
+		"description": "찾고 있는 페이지가 없습니다.",
+		"code": "404",
+		"button": "홈으로 돌아가기"
+	}
+}

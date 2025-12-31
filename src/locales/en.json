@@ -1,0 +1,61 @@
+{
+	"site": {
+		"title": "Project 甘い | Status",
+		"description": "Service status monitoring page"
+	},
+	"page": {
+		"title": "Status"
+	},
+	"status": {
+		"up": "All systems operational",
+		"degraded": "The system is partially degraded",
+		"down": "One or more service is unavailible"
+	},
+	"status_indicator": {
+		"up": "Operational",
+		"degraded": "Degraded",
+		"down": "Down"
+	},
+	"header": {
+		"loading": "Loading...",
+		"ready": "Ready",
+		"connection_error": "Cannot connect to backend.",
+		"ensure_server": "Ensure server is running at:",
+		"title": "Status"
+	},
+	"footer": {
+		"last_updated": "Last updated:",
+		"next_update": "Next update:",
+		"seconds": " seconds",
+		"api_documentation": "API Documentation",
+		"rss_feed": "RSS Feed"
+	},
+	"uptime": "Uptime",
+	"time_range": {
+		"all": "All",
+		"hour": "Hour",
+		"day": "Day",
+		"week": "Week"
+	},
+	"heartbeat": {
+		"ping": "Ping",
+		"avg_ping": "Avg Ping",
+		"samples": "Samples"
+	},
+	"error": {
+		"title": "Something went wrong",
+		"description": "An error occurred while loading the page.",
+		"button": "Try again",
+		"retry": "Retry",
+		"backend_unreachable_title": "Backend Unavailable",
+		"backend_unreachable_subtitle": "Unable to connect to the backend server",
+		"backend_unreachable_help": "Please ensure the backend server is running and accessible at the address shown above.",
+		"backend_address": "Backend Address:"
+	},
+	"notFound": {
+		"title": "Page Not Found",
+		"description": "The page you are looking for does not exist.",
+		"code": "404",
+		"button": "Go Home"
+	}
+}
