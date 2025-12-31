@@ -49,6 +49,14 @@
     </h3>
 </div>
 
+<div align="center">
+    <h4>
+        <a href="https://github.com/Rystal-Team/amai-status">
+            Backend Repository
+        </a>
+    </h4>
+</div>
+
 ## Table of Contents
 
 - [Features](#features)
