@@ -57,6 +57,14 @@
     </h4>
 </div>
 
+<summary><h2>Screenshot</h2></summary>
+
+<details>
+<div align="center">
+    <img src="./screenshots/front.png" alt="Status Dashboard UI" width="80%" />
+</div>
+</details>
+
 ## Table of Contents
 
 - [Features](#features)
