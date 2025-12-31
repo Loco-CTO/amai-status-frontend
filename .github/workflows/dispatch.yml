@@ -1,4 +1,4 @@
-name: Notify Private Pages Repo
+name: Dispatch Private Pages Repo
 
 on:
     push:
