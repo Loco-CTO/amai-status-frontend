@@ -39,7 +39,7 @@ export function useStatusComputation(state: StatusComputationState) {
 
 			return { text: t(state.language, "status_indicator.up"), status: "up" };
 		},
-		[state.degradedThreshold, state.language]
+		[state.degradedThreshold, state.language],
 	);
 
 	/**
@@ -66,7 +66,7 @@ export function useStatusComputation(state: StatusComputationState) {
 			const key = `status_indicator.${status}` as const;
 			return t(state.language, key);
 		},
-		[state.language]
+		[state.language],
 	);
 
 	return {

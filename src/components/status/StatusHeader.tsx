@@ -51,8 +51,8 @@ export const StatusHeader = memo(function StatusHeader({
 						{overallStatus === "up"
 							? t(language, "status.up")
 							: overallStatus === "degraded"
-							? t(language, "status.degraded")
-							: t(language, "status.down")}
+								? t(language, "status.degraded")
+								: t(language, "status.down")}
 					</p>
 				</div>
 			</div>
