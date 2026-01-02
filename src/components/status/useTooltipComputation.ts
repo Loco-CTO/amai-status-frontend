@@ -36,25 +36,21 @@ export function useTooltipComputation(
 					hoveredMonitor.degradedCount > 0) ||
 					(hoveredMonitor.downCount !== undefined && hoveredMonitor.downCount > 0));
 
-			let pingText = t(language, "heartbeat.ping") + ": N/A";
+			let pingText = `${t(language, "heartbeat.ping")}: N/A`;
 			if (
 				hoveredMonitor.avgResponseTime !== null &&
 				hoveredMonitor.avgResponseTime !== undefined
 			) {
-				pingText =
-					t(language, "heartbeat.avg_ping") +
-					": " +
-					(hoveredMonitor.avgResponseTime * 1000).toFixed(0) +
-					"ms";
+				pingText = `${t(language, "heartbeat.avg_ping")}: ${(
+					hoveredMonitor.avgResponseTime * 1000
+				).toFixed(0)}ms`;
 			} else if (
 				hoveredMonitor.responseTime !== null &&
 				hoveredMonitor.responseTime !== undefined
 			) {
-				pingText =
-					t(language, "heartbeat.ping") +
-					": " +
-					(hoveredMonitor.responseTime * 1000).toFixed(0) +
-					"ms";
+				pingText = `${t(language, "heartbeat.ping")}: ${(
+					hoveredMonitor.responseTime * 1000
+				).toFixed(0)}ms`;
 			}
 
 			return {
