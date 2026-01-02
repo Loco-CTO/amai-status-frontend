@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, memo } from "react";
+import { useState, useRef, useEffect, memo, useCallback } from "react";
 import styles from "@/styles/theme.module.css";
 
 interface StatusIndicatorProps {
@@ -58,7 +58,7 @@ interface HeartbeatBarProps {
 			typeLabel?: string;
 			degradedCount?: number;
 			downCount?: number;
-		} | null,
+		} | null
 	) => void;
 	onMouseMove?: (x: number, y: number) => void;
 	onMouseLeave?: () => void;
@@ -79,7 +79,7 @@ const HeartbeatBarComponent = ({
 }: HeartbeatBarProps) => {
 	const getEffectiveMaxItems = (
 		baseMax: number,
-		currentInterval: string,
+		currentInterval: string
 	): number => {
 		if (currentInterval === "all") return baseMax;
 		if (currentInterval === "hour") return Math.floor(baseMax / 1.25);
@@ -89,7 +89,6 @@ const HeartbeatBarComponent = ({
 	};
 
 	const effectiveMaxItems = getEffectiveMaxItems(maxItems, interval);
-	const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 	const [displayItems, setDisplayItems] = useState<
 		Array<{
 			status: "up" | "degraded" | "down" | "none";
@@ -144,26 +143,39 @@ const HeartbeatBarComponent = ({
 					typeLabel: metadata?.[startIdx + i]?.typeLabel,
 					degradedCount: metadata?.[startIdx + i]?.degradedCount,
 					downCount: metadata?.[startIdx + i]?.downCount,
-				})),
+				}))
 			);
 			setTranslateX(0);
 		}
 	}, [data, timestamps, responseTimes, metadata, effectiveMaxItems]);
 
-	const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-		onMouseMove?.(e.clientX, e.clientY);
-	};
+	const handleMouseMove = useCallback(
+		(e: React.MouseEvent<HTMLDivElement>) => {
+			onMouseMove?.(e.clientX, e.clientY);
+		},
+		[onMouseMove]
+	);
 
-	const handleMouseEnter = (index: number) => {
-		setHoveredIndex(index);
-		onHover?.(displayItems[index] || null);
-	};
-
-	const handleMouseLeave = () => {
-		setHoveredIndex(null);
+	const handleMouseLeave = useCallback(() => {
 		onHover?.(null);
 		onMouseLeave?.();
-	};
+	}, [onHover, onMouseLeave]);
+
+	const handleItemMouseEnter = useCallback(
+		(item: (typeof displayItems)[0]) => {
+			onHover?.({
+				timestamp: item.timestamp,
+				status: item.status,
+				responseTime: item.responseTime,
+				count: item.count,
+				avgResponseTime: item.avgResponseTime,
+				typeLabel: item.typeLabel,
+				degradedCount: item.degradedCount,
+				downCount: item.downCount,
+			});
+		},
+		[onHover]
+	);
 
 	const calculateNodeWidth = () => {
 		if (firstNodeRef.current) {
@@ -261,19 +273,7 @@ const HeartbeatBarComponent = ({
 						<div
 							key={item.id}
 							className={`${styles.heartbeatDay} ${styles[item.status]}`}
-							onMouseEnter={() => {
-								setHoveredIndex(0);
-								onHover?.({
-									timestamp: item.timestamp,
-									status: item.status,
-									responseTime: item.responseTime,
-									count: item.count,
-									avgResponseTime: item.avgResponseTime,
-									typeLabel: item.typeLabel,
-									degradedCount: item.degradedCount,
-									downCount: item.downCount,
-								});
-							}}
+							onMouseEnter={() => handleItemMouseEnter(item)}
 						/>
 					))}
 				</div>
@@ -293,7 +293,7 @@ export const HeartbeatBar = memo(
 			prevProps.metadata === nextProps.metadata &&
 			prevProps.interval === nextProps.interval
 		);
-	},
+	}
 );
 
 HeartbeatBar.displayName = "HeartbeatBar";
