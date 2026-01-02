@@ -1,4 +1,5 @@
 import { memo } from "react";
+import Image from "next/image";
 import styles from "@/styles/theme.module.css";
 import { StatusIcon } from "./StatusComponents";
 import { LanguageSelector } from "../selectors/LanguageSelector";
@@ -29,7 +30,14 @@ export const StatusHeader = memo(function StatusHeader({
 			<div className={styles.container}>
 				<div className={styles.headerContent}>
 					<div className={styles.headerLeft}>
-						<img src={`${apiBase}/logo.png`} alt="logo" className={styles.logo} />
+						<Image
+							src={`${apiBase}/logo.png`}
+							alt="logo"
+							width={40}
+							height={40}
+							className={styles.logo}
+							unoptimized
+						/>
 					</div>
 					<LanguageSelector
 						language={language}
