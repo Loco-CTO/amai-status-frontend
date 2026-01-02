@@ -16,23 +16,23 @@ export function HeartbeatIntervalSelector({
 	language,
 }: HeartbeatIntervalSelectorProps) {
 	const [selectedInterval, setSelectedInterval] = useState<Interval>("all");
-	const [currentIndex, setCurrentIndex] = useState(0);
 
 	const intervals: Interval[] = ["all", "hour", "day", "week"];
 
 	const handleSelectInterval = (interval: Interval) => {
 		setSelectedInterval(interval);
 		onIntervalChange(interval);
-		setCurrentIndex(intervals.indexOf(interval));
 	};
 
 	const handlePrevious = () => {
+		const currentIndex = intervals.indexOf(selectedInterval);
 		const newIndex = (currentIndex - 1 + intervals.length) % intervals.length;
 		const newInterval = intervals[newIndex];
 		handleSelectInterval(newInterval);
 	};
 
 	const handleNext = () => {
+		const currentIndex = intervals.indexOf(selectedInterval);
 		const newIndex = (currentIndex + 1) % intervals.length;
 		const newInterval = intervals[newIndex];
 		handleSelectInterval(newInterval);
