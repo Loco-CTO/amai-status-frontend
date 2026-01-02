@@ -45,6 +45,8 @@ interface HeartbeatBarProps {
 		count: number;
 		avgResponseTime: number | null;
 		typeLabel: string;
+		degradedCount?: number;
+		downCount?: number;
 	}>;
 	onHover?: (
 		item: {
@@ -54,6 +56,8 @@ interface HeartbeatBarProps {
 			count?: number;
 			avgResponseTime?: number | null;
 			typeLabel?: string;
+			degradedCount?: number;
+			downCount?: number;
 		} | null
 	) => void;
 	onMouseMove?: (x: number, y: number) => void;
@@ -95,6 +99,8 @@ const HeartbeatBarComponent = ({
 			count?: number;
 			avgResponseTime?: number | null;
 			typeLabel?: string;
+			degradedCount?: number;
+			downCount?: number;
 		}>
 	>(() => {
 		const slicedData = data.slice(-effectiveMaxItems);
@@ -107,6 +113,8 @@ const HeartbeatBarComponent = ({
 			count: metadata?.[startIdx + i]?.count,
 			avgResponseTime: metadata?.[startIdx + i]?.avgResponseTime,
 			typeLabel: metadata?.[startIdx + i]?.typeLabel,
+			degradedCount: metadata?.[startIdx + i]?.degradedCount,
+			downCount: metadata?.[startIdx + i]?.downCount,
 		}));
 	});
 	const [translateX, setTranslateX] = useState(0);
@@ -124,6 +132,14 @@ const HeartbeatBarComponent = ({
 		if (currentLen <= lastLen) {
 			const slicedData = data.slice(-effectiveMaxItems);
 			const startIdx = Math.max(0, data.length - effectiveMaxItems);
+
+			if (metadata && metadata.length > 0) {
+				console.log(
+					`[HeartbeatBar displayItems] data.length=${data.length}, metadata.length=${metadata.length}, startIdx=${startIdx}, effectiveMaxItems=${effectiveMaxItems}`
+				);
+				console.log(`[HeartbeatBar] First item metadata:`, metadata[startIdx]);
+			}
+
 			setDisplayItems(
 				slicedData.map((status, i) => ({
 					status,
@@ -133,6 +149,8 @@ const HeartbeatBarComponent = ({
 					count: metadata?.[startIdx + i]?.count,
 					avgResponseTime: metadata?.[startIdx + i]?.avgResponseTime,
 					typeLabel: metadata?.[startIdx + i]?.typeLabel,
+					degradedCount: metadata?.[startIdx + i]?.degradedCount,
+					downCount: metadata?.[startIdx + i]?.downCount,
 				}))
 			);
 			setTranslateX(0);
@@ -182,29 +200,21 @@ const HeartbeatBarComponent = ({
 		const lastLen = lastDataLenRef.current;
 
 		if (currentLen > lastLen) {
-			const newItems = data.slice(-effectiveMaxItems);
+			const slicedData = data.slice(-effectiveMaxItems);
 			const startIdx = Math.max(0, data.length - effectiveMaxItems);
-			const newTimestamps = timestamps.slice(startIdx);
-			const newResponseTimes = responseTimes?.slice(startIdx) || [];
-			const newMetadata = metadata?.slice(startIdx) || [];
-			const itemsToAdd = newItems.slice(displayItems.length);
-			const itemsAddStartIdx = displayItems.length;
-			const timestampsToAdd = newTimestamps.slice(itemsAddStartIdx);
-			const responseTimesToAdd = newResponseTimes.slice(itemsAddStartIdx);
-			const metadataToAdd = newMetadata.slice(itemsAddStartIdx);
+			const newDisplayItems = slicedData.map((status, i) => ({
+				status,
+				id: `item-${startIdx + i}`,
+				timestamp: timestamps[startIdx + i] || new Date(),
+				responseTime: responseTimes?.[startIdx + i] || null,
+				count: metadata?.[startIdx + i]?.count,
+				avgResponseTime: metadata?.[startIdx + i]?.avgResponseTime,
+				typeLabel: metadata?.[startIdx + i]?.typeLabel,
+				degradedCount: metadata?.[startIdx + i]?.degradedCount,
+				downCount: metadata?.[startIdx + i]?.downCount,
+			}));
 
-			setDisplayItems((prev) => [
-				...prev,
-				...itemsToAdd.map((status, i) => ({
-					status,
-					id: `item-${Date.now()}-${i}`,
-					timestamp: timestampsToAdd[i] || new Date(),
-					responseTime: responseTimesToAdd[i] || null,
-					count: metadataToAdd[i]?.count,
-					avgResponseTime: metadataToAdd[i]?.avgResponseTime,
-					typeLabel: metadataToAdd[i]?.typeLabel,
-				})),
-			]);
+			setDisplayItems(newDisplayItems);
 
 			if (transitionTimeoutRef.current) {
 				clearTimeout(transitionTimeoutRef.current);
@@ -272,6 +282,8 @@ const HeartbeatBarComponent = ({
 									count: item.count,
 									avgResponseTime: item.avgResponseTime,
 									typeLabel: item.typeLabel,
+									degradedCount: item.degradedCount,
+									downCount: item.downCount,
 								});
 							}}
 						/>

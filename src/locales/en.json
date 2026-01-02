@@ -40,7 +40,9 @@
 	"heartbeat": {
 		"ping": "Ping",
 		"avg_ping": "Avg Ping",
-		"samples": "Samples"
+		"samples": "Samples",
+		"degraded": "Degraded",
+		"down": "Down"
 	},
 	"error": {
 		"title": "Something went wrong",

@@ -40,7 +40,9 @@
 	"heartbeat": {
 		"ping": "延迟",
 		"avg_ping": "平均延迟",
-		"samples": "样本"
+		"samples": "样本",
+		"degraded": "已降级",
+		"down": "已关闭"
 	},
 	"error": {
 		"title": "出错了",
