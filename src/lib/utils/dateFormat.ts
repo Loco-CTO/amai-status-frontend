@@ -20,7 +20,7 @@ export function getLocaleString(language: Language): string {
 export function formatLocalDateTime(
 	date: Date,
 	language: Language,
-	options?: Intl.DateTimeFormatOptions
+	options?: Intl.DateTimeFormatOptions,
 ): string {
 	const defaultOptions: Intl.DateTimeFormatOptions = {
 		year: "numeric",
