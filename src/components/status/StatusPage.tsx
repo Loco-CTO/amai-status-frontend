@@ -888,23 +888,19 @@ export function StatusPage() {
 		</>
 	);
 
-	return (
+	return backendUnreachable ? (
+		<BackendUnreachable apiBase={apiBase} language={language} />
+	) : (
 		<>
-			{backendUnreachable ? (
-				<BackendUnreachable apiBase={apiBase} language={language} />
-			) : (
-				<>
-					{showLoadingScreen && (
-						<LoadingScreen
-							apiBase={apiBase}
-							language={language}
-							progress={loadingProgress}
-							onFadeComplete={handleLoadingFadeComplete}
-						/>
-					)}
-					{mainContent}
-				</>
+			{showLoadingScreen && (
+				<LoadingScreen
+					apiBase={apiBase}
+					language={language}
+					progress={loadingProgress}
+					onFadeComplete={handleLoadingFadeComplete}
+				/>
 			)}
+			{mainContent}
 		</>
 	);
 }
