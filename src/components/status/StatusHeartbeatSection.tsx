@@ -29,7 +29,8 @@ interface StatusHeartbeatSectionProps {
 			typeLabel?: string;
 			degradedCount?: number;
 			downCount?: number;
-		} | null,
+			interval?: "all" | "hour" | "day" | "week";
+		} | null
 	) => void;
 	onMouseMove: (x: number, y: number) => void;
 	onMouseLeave: () => void;
