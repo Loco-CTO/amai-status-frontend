@@ -76,7 +76,7 @@ export function useStatusDataLoader({
 	const fetchAggregatedHeartbeat = useCallback(
 		async (
 			monitorName: string,
-			interval: "all" | "hour" | "day" | "week"
+			interval: "all" | "hour" | "day" | "week",
 		): Promise<AggregatedHeartbeatNode[]> => {
 			try {
 				const response = await axios.get<{ heartbeat: AggregatedHeartbeatNode[] }>(
@@ -84,7 +84,7 @@ export function useStatusDataLoader({
 					{
 						params: { interval },
 						timeout: 15000,
-					}
+					},
 				);
 				return response.data.heartbeat || [];
 			} catch (error) {
@@ -92,7 +92,7 @@ export function useStatusDataLoader({
 				return [];
 			}
 		},
-		[apiBase]
+		[apiBase],
 	);
 
 	/**
@@ -104,7 +104,7 @@ export function useStatusDataLoader({
 	const preloadAllIntervals = useCallback(
 		async (
 			monitorsToPreload: Monitor[],
-			onDataUpdate: (key: string, data: AggregatedHeartbeatNode[]) => void
+			onDataUpdate: (key: string, data: AggregatedHeartbeatNode[]) => void,
 		) => {
 			const intervals: Array<"all" | "hour" | "day" | "week"> = [
 				"all",
@@ -132,10 +132,10 @@ export function useStatusDataLoader({
 									(progressTrackerRef.current.completedTasks /
 										progressTrackerRef.current.totalTasks) *
 										80 +
-										20
+										20,
 								);
 								onProgressUpdate(progress);
-							}
+							},
 						);
 
 						preloadPromises.push(promise);
@@ -147,7 +147,7 @@ export function useStatusDataLoader({
 				console.error("Error preloading intervals:", error);
 			}
 		},
-		[fetchAggregatedHeartbeat, onProgressUpdate]
+		[fetchAggregatedHeartbeat, onProgressUpdate],
 	);
 
 	return {

@@ -160,14 +160,14 @@ export function StatusPage() {
 				state.setHoveredMonitorIndex(null);
 			}
 		},
-		[state]
+		[state],
 	);
 
 	const handleTooltipMouseMove = useCallback(
 		(x: number, y: number) => {
 			state.setTooltipPos({ x, y });
 		},
-		[state]
+		[state],
 	);
 
 	/**
@@ -192,7 +192,7 @@ export function StatusPage() {
 		(interval: number) => {
 			state.setUpdateInterval(interval);
 		},
-		[state]
+		[state],
 	);
 
 	/**
@@ -207,13 +207,13 @@ export function StatusPage() {
 				[monitor.name]: interval,
 			}));
 		},
-		[state]
+		[state],
 	);
 
 	const createHeartbeatIntervalChangeHandler = useCallback(
 		(monitor: Monitor) => (interval: "all" | "hour" | "day" | "week") =>
 			handleHeartbeatIntervalChange(monitor, interval),
-		[handleHeartbeatIntervalChange]
+		[handleHeartbeatIntervalChange],
 	);
 
 	useEffect(() => {
@@ -295,8 +295,8 @@ export function StatusPage() {
 			const hasDown = response.data.monitors.some((m) => !m.current_status.is_up);
 			const hasDegraded = response.data.monitors.some((m) =>
 				m.history.some(
-					(r) => r.response_time && r.response_time * 1000 > state.degradedThreshold
-				)
+					(r) => r.response_time && r.response_time * 1000 > state.degradedThreshold,
+				),
 			);
 
 			if (hasDown) state.setOverallStatus("down");
@@ -314,7 +314,7 @@ export function StatusPage() {
 	 */
 	const fetchAggregatedHeartbeat = async (
 		monitorName: string,
-		interval: "all" | "hour" | "day" | "week"
+		interval: "all" | "hour" | "day" | "week",
 	) => {
 		try {
 			let hoursNeeded = 720;
@@ -332,7 +332,7 @@ export function StatusPage() {
 				`${apiBase}/api/heartbeat`,
 				{
 					params: { monitor_name: monitorName, interval, hours: hoursNeeded },
-				}
+				},
 			);
 			const key = `${monitorName}:${interval}`;
 			state.setAggregatedHeartbeat((prev) => ({
@@ -342,7 +342,7 @@ export function StatusPage() {
 		} catch (error) {
 			console.error(
 				`Failed to fetch aggregated heartbeat for ${monitorName}:`,
-				error
+				error,
 			);
 		}
 	};
@@ -390,7 +390,7 @@ export function StatusPage() {
 										interval,
 										hours: hoursNeeded,
 									},
-								}
+								},
 							);
 							const key = `${monitor.name}:${interval}`;
 							state.setAggregatedHeartbeat((prev) => ({
@@ -437,7 +437,7 @@ export function StatusPage() {
 					`${apiBase}/api/status`,
 					{
 						params: { hours: 24 },
-					}
+					},
 				);
 				const fetchedMonitors = statusResponse.data.monitors;
 				state.setMonitors(fetchedMonitors);
@@ -446,8 +446,9 @@ export function StatusPage() {
 				const hasDown = fetchedMonitors.some((m) => !m.current_status.is_up);
 				const hasDegraded = fetchedMonitors.some((m) =>
 					m.history.some(
-						(r) => r.response_time && r.response_time * 1000 > state.degradedThreshold
-					)
+						(r) =>
+							r.response_time && r.response_time * 1000 > state.degradedThreshold,
+					),
 				);
 
 				if (hasDown) state.setOverallStatus("down");
@@ -505,7 +506,7 @@ export function StatusPage() {
 	 * @returns Object containing display text and status level
 	 */
 	const getStatusIndicatorText = (
-		monitor: Monitor
+		monitor: Monitor,
 	): { text: string; status: "up" | "degraded" | "down" } => {
 		if (!monitor.current_status.is_up) {
 			return { text: t(state.language, "status_indicator.down"), status: "down" };
@@ -581,7 +582,7 @@ export function StatusPage() {
 			state.heartbeatItemCount,
 			state.degradedThreshold,
 			state.degradedPercentageThreshold,
-		]
+		],
 	);
 
 	const getHeartbeatTimestamps = useCallback(
@@ -602,7 +603,7 @@ export function StatusPage() {
 			state.heartbeatIntervals,
 			state.aggregatedHeartbeat,
 			state.heartbeatItemCount,
-		]
+		],
 	);
 
 	const getHeartbeatResponseTimes = useCallback(
@@ -623,12 +624,12 @@ export function StatusPage() {
 			state.heartbeatIntervals,
 			state.aggregatedHeartbeat,
 			state.heartbeatItemCount,
-		]
+		],
 	);
 
 	const getHeartbeatMetadata = useMemo(() => {
 		return (
-			monitor: Monitor
+			monitor: Monitor,
 		): Array<{
 			count: number;
 			avgResponseTime: number | null;
@@ -654,8 +655,8 @@ export function StatusPage() {
 				state.language === "ja"
 					? "ja-JP"
 					: state.language === "ko"
-					? "ko-KR"
-					: "en-US";
+						? "ko-KR"
+						: "en-US";
 
 			/**
 			 * Gets the timezone abbreviation for the current locale.
@@ -739,7 +740,7 @@ export function StatusPage() {
 	 * @returns Localized status label string
 	 */
 	const getStatusLabel = (
-		status: "up" | "degraded" | "down" | "none"
+		status: "up" | "degraded" | "down" | "none",
 	): string => {
 		if (status === "none") {
 			return "No Data";
@@ -772,8 +773,8 @@ export function StatusPage() {
 							{state.overallStatus === "up"
 								? t(state.language, "status.up")
 								: state.overallStatus === "degraded"
-								? t(state.language, "status.degraded")
-								: t(state.language, "status.down")}
+									? t(state.language, "status.degraded")
+									: t(state.language, "status.down")}
 						</p>
 					</div>
 				</div>
@@ -844,8 +845,8 @@ export function StatusPage() {
 									state.language === "ja"
 										? "ja-JP"
 										: state.language === "ko"
-										? "ko-KR"
-										: "en-US",
+											? "ko-KR"
+											: "en-US",
 									{
 										year: "numeric",
 										month: "2-digit",
@@ -854,7 +855,7 @@ export function StatusPage() {
 										minute: "2-digit",
 										second: "2-digit",
 										timeZoneName: "short",
-									}
+									},
 								)}
 						</div>
 						<div
@@ -923,8 +924,8 @@ export function StatusPage() {
 							state.language === "ja"
 								? "ja-JP"
 								: state.language === "ko"
-								? "ko-KR"
-								: "en-US",
+									? "ko-KR"
+									: "en-US",
 							{
 								year: "numeric",
 								month: "2-digit",
@@ -933,7 +934,7 @@ export function StatusPage() {
 								minute: "2-digit",
 								second: "2-digit",
 								timeZoneName: "short",
-							}
+							},
 						)}{" "}
 						・ {t(state.language, "footer.next_update")} {state.nextUpdate}
 						{t(state.language, "footer.seconds")}
