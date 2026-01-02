@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import "@/styles/theme.css";
 import { TitleUpdaterWrapper } from "@/components/common/TitleUpdaterWrapper";
 
+/**
+ * Generates metadata for the application.
+ * Fetches site title from API configuration for dynamic metadata.
+ * @returns Promise with page metadata including title, description, and icons
+ */
 export async function generateMetadata(): Promise<Metadata> {
 	const apiBase =
 		process.env.NEXT_PUBLIC_SERVER_ADDRESS || "http://localhost:8182";
@@ -35,6 +40,11 @@ export async function generateMetadata(): Promise<Metadata> {
 	};
 }
 
+/**
+ * Root layout component for the application.
+ * Provides the basic HTML structure and includes the title updater.
+ * @param children - Page content to render
+ */
 export default function RootLayout({
 	children,
 }: {

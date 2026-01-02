@@ -8,6 +8,11 @@ interface TitleUpdaterProps {
 	siteTitle?: string;
 }
 
+/**
+ * Component that updates the document title based on language and site title.
+ * Listens for storage events to update title when language changes.
+ * @param siteTitle - The site title to display in the document title
+ */
 export function TitleUpdater({
 	siteTitle = "Project 甘い",
 }: TitleUpdaterProps) {
@@ -22,6 +27,9 @@ export function TitleUpdater({
 		document.title = `${siteTitle} | ${titleFormatted}`;
 		setMounted(true);
 
+		/**
+		 * Handles storage events to sync language changes across tabs.
+		 */
 		const handleStorageChange = () => {
 			const updatedLang =
 				(getCookie("language") as Language) || detectBrowserLanguage();

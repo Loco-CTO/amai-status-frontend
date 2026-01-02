@@ -4,10 +4,17 @@ import { useEffect, useState } from "react";
 import { TitleUpdater } from "./TitleUpdater";
 import axios from "axios";
 
+/**
+ * Wrapper component that fetches site title from API and passes it to TitleUpdater.
+ * Handles loading the site title configuration from the backend.
+ */
 export function TitleUpdaterWrapper() {
 	const [siteTitle, setSiteTitle] = useState("Project 甘い");
 
 	useEffect(() => {
+		/**
+		 * Fetches the site title from the API configuration endpoint.
+		 */
 		const fetchSiteTitle = async () => {
 			try {
 				const apiBase =
