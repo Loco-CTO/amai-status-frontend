@@ -303,12 +303,11 @@ const HeartbeatBarComponent = ({
 					}}
 				>
 					{displayItems.map((item) => (
-						<button
+						<div
 							key={item.id}
 							className={`${styles.heartbeatDay} ${styles[item.status]}`}
 							aria-label={`${item.status} status`}
 							onMouseEnter={createItemMouseEnterHandler(item)}
-							type="button"
 						/>
 					))}
 				</div>
