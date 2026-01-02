@@ -78,6 +78,7 @@ interface HeartbeatItem {
 	typeLabel?: string;
 	degradedCount?: number;
 	downCount?: number;
+	interval?: "all" | "hour" | "day" | "week";
 }
 
 /**
@@ -159,6 +160,7 @@ export function StatusPage() {
 					typeLabel: item.typeLabel,
 					degradedCount: item.degradedCount,
 					downCount: item.downCount,
+					interval: item.interval,
 				});
 			} else {
 				state.setHoveredMonitorIndex(null);
