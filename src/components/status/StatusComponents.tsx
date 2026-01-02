@@ -230,11 +230,6 @@ const HeartbeatBarComponent = ({
 						setTranslateX(0);
 					}, 400);
 				} else if (containerRef.current) {
-					const containerWidth = containerRef.current.offsetWidth;
-					const totalItems = displayItems.length + itemsToAdd.length;
-					const itemWidth = containerWidth / totalItems;
-					const animationDistance = -(itemWidth + 2);
-
 					transitionTimeoutRef.current = setTimeout(() => {
 						setDisplayItems((prev) => prev.slice(1));
 						setTranslateX(0);
