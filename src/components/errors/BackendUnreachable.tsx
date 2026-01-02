@@ -8,6 +8,12 @@ interface BackendUnreachableProps {
 	language: Language;
 }
 
+/**
+ * Error screen displayed when the backend API is unreachable.
+ * Shows troubleshooting information and the attempted API URL.
+ * @param apiBase - The API base URL that failed to connect
+ * @param language - The current application language
+ */
 export function BackendUnreachable({
 	apiBase,
 	language,

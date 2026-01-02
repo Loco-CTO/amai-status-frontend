@@ -10,6 +10,10 @@ interface TooltipProps {
 	getStatusLabel: (status: string) => string;
 }
 
+/**
+ * Tooltip component showing detailed heartbeat information for a hovered status item.
+ * Displays timestamp, status, response time, and degradation metrics.
+ */
 export const Tooltip = memo(function Tooltip({
 	info,
 	position,

@@ -11,6 +11,10 @@ interface HeartbeatIntervalSelectorProps {
 
 type Interval = "all" | "hour" | "day" | "week";
 
+/**
+ * Selector component for choosing heartbeat data interval.
+ * Allows users to view status data aggregated by different time periods.
+ */
 export function HeartbeatIntervalSelector({
 	onIntervalChange,
 	language,
@@ -24,12 +28,12 @@ export function HeartbeatIntervalSelector({
 			setSelectedInterval(interval);
 			onIntervalChange(interval);
 		},
-		[onIntervalChange],
+		[onIntervalChange]
 	);
 
 	const createIntervalSelectHandler = useCallback(
 		(interval: Interval) => () => handleSelectInterval(interval),
-		[handleSelectInterval],
+		[handleSelectInterval]
 	);
 
 	const handlePrevious = useCallback(() => {

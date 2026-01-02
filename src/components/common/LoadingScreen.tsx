@@ -11,6 +11,14 @@ interface LoadingScreenProps {
 	onFadeComplete?: () => void;
 }
 
+/**
+ * Loading screen component shown during initial app setup.
+ * Displays progress bar and status messages while preloading data.
+ * @param language - The current application language
+ * @param apiBase - The API base URL
+ * @param progress - Loading progress percentage (0-100)
+ * @param onFadeComplete - Callback when fade-out animation completes
+ */
 export function LoadingScreen({
 	language,
 	apiBase,

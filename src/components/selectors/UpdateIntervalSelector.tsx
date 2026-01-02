@@ -13,6 +13,10 @@ interface UpdateIntervalSelectorProps {
 	onIntervalChange?: (interval: number) => void;
 }
 
+/**
+ * Selector component for choosing status update interval.
+ * Allows users to control how frequently the dashboard refreshes.
+ */
 export function UpdateIntervalSelector({
 	onIntervalChange,
 }: UpdateIntervalSelectorProps) {

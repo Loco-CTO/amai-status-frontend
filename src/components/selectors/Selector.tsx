@@ -18,6 +18,16 @@ interface SelectorProps {
 	ariaLabel?: string;
 }
 
+/**
+ * A reusable dropdown selector component.
+ * @param options - Array of selectable options
+ * @param value - Currently selected value
+ * @param onChange - Callback when selection changes
+ * @param icon - Optional Material Symbols icon name
+ * @param label - Optional custom label text
+ * @param expandUp - Whether dropdown expands upward (default: false)
+ * @param ariaLabel - Accessible label for the button
+ */
 export function Selector({
 	options,
 	value,
@@ -37,12 +47,12 @@ export function Selector({
 			onChange(selectedValue);
 			setIsOpen(false);
 		},
-		[onChange],
+		[onChange]
 	);
 
 	const createSelectHandler = useCallback(
 		(selectedValue: string | number) => () => handleSelect(selectedValue),
-		[handleSelect],
+		[handleSelect]
 	);
 
 	const handleToggle = useCallback(() => {

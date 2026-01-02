@@ -11,7 +11,12 @@ interface UseTooltipPositionProps {
 	y: number;
 }
 
-
+/**
+ * Custom hook for calculating adjusted tooltip position within viewport bounds.
+ * @param x - Initial X coordinate
+ * @param y - Initial Y coordinate
+ * @returns Function that calculates adjusted position to keep tooltip visible
+ */
 export function useTooltipPosition({
 	x,
 	y,

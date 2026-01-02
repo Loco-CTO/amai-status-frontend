@@ -16,6 +16,10 @@ interface LanguageSelectorProps {
 	onLanguageChange?: (lang: Language) => void;
 }
 
+/**
+ * Selector component for choosing the application language.
+ * Persists selection to browser cookies and detects browser language by default.
+ */
 export function LanguageSelector({
 	language: initialLanguage,
 	onLanguageChange,
