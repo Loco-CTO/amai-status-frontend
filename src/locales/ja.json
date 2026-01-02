@@ -40,7 +40,9 @@
 	"heartbeat": {
 		"ping": "ピング",
 		"avg_ping": "平均ピング",
-		"samples": "サンプル"
+		"samples": "サンプル",
+		"degraded": "低下",
+		"down": "ダウン"
 	},
 	"error": {
 		"title": "エラーが発生しました",

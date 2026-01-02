@@ -93,6 +93,9 @@ export function StatusPage() {
 		count?: number;
 		avgResponseTime?: number | null;
 		typeLabel?: string;
+		degradedCount?: number;
+		downCount?: number;
+		interval?: "all" | "hour" | "day" | "week";
 	} | null>(null);
 	const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 	const [heartbeatIntervals, setHeartbeatIntervals] = useState<
@@ -423,6 +426,8 @@ export function StatusPage() {
 			count: number;
 			avgResponseTime: number | null;
 			typeLabel: string;
+			degradedCount?: number;
+			downCount?: number;
 		}> => {
 			const interval = heartbeatIntervals[monitor.name] || "all";
 			const key = `${monitor.name}:${interval}`;
@@ -433,6 +438,8 @@ export function StatusPage() {
 					count: 1,
 					avgResponseTime: null,
 					typeLabel: t(language, "time_range.all"),
+					degradedCount: 0,
+					downCount: 0,
 				}));
 			}
 
@@ -499,6 +506,8 @@ export function StatusPage() {
 					count: node.count,
 					avgResponseTime: node.avg_response_time,
 					typeLabel,
+					degradedCount: node.degraded_count,
+					downCount: node.down_count,
 				};
 			});
 		};
@@ -597,6 +606,9 @@ export function StatusPage() {
 													count: item.count,
 													avgResponseTime: item.avgResponseTime,
 													typeLabel: item.typeLabel,
+													degradedCount: item.degradedCount,
+													downCount: item.downCount,
+													interval: interval,
 												});
 											} else {
 												setHoveredMonitorIndex(null);
@@ -649,6 +661,28 @@ export function StatusPage() {
 						>
 							{getStatusLabel(hoveredMonitorIndex.status)}
 						</div>
+						{hoveredMonitorIndex.interval &&
+						hoveredMonitorIndex.interval !== "all" &&
+						((hoveredMonitorIndex.degradedCount !== undefined &&
+							hoveredMonitorIndex.degradedCount > 0) ||
+							(hoveredMonitorIndex.downCount !== undefined &&
+								hoveredMonitorIndex.downCount > 0)) ? (
+							<div className={styles.tooltipIssues}>
+								{hoveredMonitorIndex.degradedCount !== undefined &&
+								hoveredMonitorIndex.degradedCount > 0 ? (
+									<div className={styles.tooltipIssueDegraded}>
+										{t(language, "heartbeat.degraded")}:{" "}
+										{hoveredMonitorIndex.degradedCount}
+									</div>
+								) : null}
+								{hoveredMonitorIndex.downCount !== undefined &&
+								hoveredMonitorIndex.downCount > 0 ? (
+									<div className={styles.tooltipIssueDown}>
+										{t(language, "heartbeat.down")}: {hoveredMonitorIndex.downCount}
+									</div>
+								) : null}
+							</div>
+						) : null}
 						<div className={styles.tooltipPing}>
 							{hoveredMonitorIndex.avgResponseTime !== null &&
 							hoveredMonitorIndex.avgResponseTime !== undefined ? (

@@ -40,7 +40,9 @@
 	"heartbeat": {
 		"ping": "핑",
 		"avg_ping": "평균 핑",
-		"samples": "샘플"
+		"samples": "샘플",
+		"degraded": "저하됨",
+		"down": "다운"
 	},
 	"error": {
 		"title": "오류가 발생했습니다",

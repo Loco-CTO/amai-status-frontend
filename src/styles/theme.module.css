@@ -393,15 +393,15 @@
 }
 
 .tooltipStatus.up {
-	color: #cfffca;
+	color: color-mix(in srgb, var(--success) 40%, white);
 }
 
 .tooltipStatus.degraded {
-	color: #fffdd6;
+	color: color-mix(in srgb, var(--warning) 40%, white);
 }
 
 .tooltipStatus.down {
-	color: #ffdddd;
+	color: color-mix(in srgb, var(--error) 40%, white);
 }
 
 .tooltipStatus.none {
@@ -421,6 +421,24 @@
 	color: var(--subtext);
 	font-size: 0.75rem;
 	margin-top: 0.2rem;
+	font-weight: 500;
+}
+
+.tooltipIssues {
+	font-size: 0.65rem;
+	margin-top: 0.15rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+}
+
+.tooltipIssueDegraded {
+	color: color-mix(in srgb, var(--warning) 25%, white);
+	font-weight: 500;
+}
+
+.tooltipIssueDown {
+	color: color-mix(in srgb, var(--error) 25%, white);
 	font-weight: 500;
 }
 
