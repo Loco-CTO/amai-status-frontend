@@ -46,16 +46,14 @@ export const StatusHeader = memo(function StatusHeader({
 				</div>
 				<div className={styles.headerCenter}>
 					<StatusIcon status={overallStatus} />
-					<h1 className={styles.brand}>
-						{getStatusLabel(overallStatus)}
-						<p className={styles.subtitle}>
-							{overallStatus === "up"
-								? t(language, "status.up")
-								: overallStatus === "degraded"
-								? t(language, "status.degraded")
-								: t(language, "status.down")}
-						</p>
-					</h1>
+					<h1 className={styles.brand}>{getStatusLabel(overallStatus)}</h1>
+					<p className={styles.subtitle}>
+						{overallStatus === "up"
+							? t(language, "status.up")
+							: overallStatus === "degraded"
+							? t(language, "status.degraded")
+							: t(language, "status.down")}
+					</p>
 				</div>
 			</div>
 		</header>

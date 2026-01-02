@@ -24,7 +24,18 @@ interface StatusItemProps {
 	interval: HeartbeatInterval;
 	maxItems: number;
 	onIntervalChange: (interval: HeartbeatInterval) => void;
-	onHeartbeatHover: (item: any) => void;
+	onHeartbeatHover: (
+		item: {
+			timestamp: Date;
+			status: "up" | "degraded" | "down" | "none";
+			responseTime: number | null;
+			count?: number;
+			avgResponseTime?: number | null;
+			typeLabel?: string;
+			degradedCount?: number;
+			downCount?: number;
+		} | null
+	) => void;
 	onTooltipMouseMove: (x: number, y: number) => void;
 	onTooltipMouseLeave: () => void;
 }
