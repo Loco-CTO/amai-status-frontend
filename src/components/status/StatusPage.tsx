@@ -84,7 +84,7 @@ export function StatusPage() {
 	const [nextUpdate, setNextUpdate] = useState<number>(15);
 	const [updateInterval, setUpdateInterval] = useState<number>(15);
 	const [overallStatus, setOverallStatus] = useState<"up" | "degraded" | "down">(
-		"up",
+		"up"
 	);
 	const [language, setLanguage] = useState<Language>("en");
 	const [mounted, setMounted] = useState(false);
@@ -108,6 +108,10 @@ export function StatusPage() {
 	} | null>(null);
 	const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
+	/**
+	 * Calculates adjusted tooltip position to keep it within viewport bounds.
+	 * @returns Object with adjusted x and y coordinates
+	 */
 	const getAdjustedTooltipPos = useCallback(() => {
 		const tooltipWidth = 280;
 		const tooltipHeight = 150;
@@ -150,6 +154,10 @@ export function StatusPage() {
 		completedTasks: 0,
 	});
 
+	/**
+	 * Updates the loading progress based on completed tasks.
+	 * @param increment - The number of tasks completed (default: 1)
+	 */
 	const updateProgressByTaskCompletion = (increment = 1) => {
 		const tracker = progressTrackerRef.current;
 		tracker.completedTasks += increment;
@@ -162,6 +170,10 @@ export function StatusPage() {
 		}
 	};
 
+	/**
+	 * Handles heartbeat item hover events to display tooltip.
+	 * @param item - The heartbeat item that was hovered, or null if unhovered
+	 */
 	const handleHeartbeatHover = useCallback((item: HeartbeatItem | null) => {
 		if (item !== null) {
 			setHoveredMonitorIndex({
@@ -183,18 +195,33 @@ export function StatusPage() {
 		setTooltipPos({ x, y });
 	}, []);
 
+	/**
+	 * Handles tooltip mouse leave events to hide it.
+	 */
 	const handleTooltipMouseLeave = useCallback(() => {
 		setHoveredMonitorIndex(null);
 	}, []);
 
+	/**
+	 * Handles the completion of the loading screen fade animation.
+	 */
 	const handleLoadingFadeComplete = useCallback(() => {
 		setShowLoadingScreen(false);
 	}, []);
 
+	/**
+	 * Handles update interval changes from the selector.
+	 * @param interval - The new update interval in seconds
+	 */
 	const handleUpdateIntervalChange = useCallback((interval: number) => {
 		setUpdateInterval(interval);
 	}, []);
 
+	/**
+	 * Handles heartbeat interval changes for a specific monitor.
+	 * @param monitor - The monitor to change interval for
+	 * @param interval - The new heartbeat interval ('all', 'hour', 'day', or 'week')
+	 */
 	const handleHeartbeatIntervalChange = useCallback(
 		(monitor: Monitor, interval: "all" | "hour" | "day" | "week") => {
 			setHeartbeatIntervals((prev) => ({
@@ -202,13 +229,13 @@ export function StatusPage() {
 				[monitor.name]: interval,
 			}));
 		},
-		[],
+		[]
 	);
 
 	const createHeartbeatIntervalChangeHandler = useCallback(
 		(monitor: Monitor) => (interval: "all" | "hour" | "day" | "week") =>
 			handleHeartbeatIntervalChange(monitor, interval),
-		[handleHeartbeatIntervalChange],
+		[handleHeartbeatIntervalChange]
 	);
 
 	useEffect(() => {
@@ -268,6 +295,10 @@ export function StatusPage() {
 		}
 	};
 
+	/**
+	 * Fetches the current status of all monitors from the API.
+	 * Updates monitors state and overall status indicators.
+	 */
 	const fetchStatus = async () => {
 		try {
 			const response = await axios.get<ApiResponse>(`${apiBase}/api/status`, {
@@ -279,8 +310,8 @@ export function StatusPage() {
 			const hasDown = response.data.monitors.some((m) => !m.current_status.is_up);
 			const hasDegraded = response.data.monitors.some((m) =>
 				m.history.some(
-					(r) => r.response_time && r.response_time * 1000 > degradedThreshold,
-				),
+					(r) => r.response_time && r.response_time * 1000 > degradedThreshold
+				)
 			);
 
 			if (hasDown) setOverallStatus("down");
@@ -293,7 +324,7 @@ export function StatusPage() {
 
 	const fetchAggregatedHeartbeat = async (
 		monitorName: string,
-		interval: "all" | "hour" | "day" | "week",
+		interval: "all" | "hour" | "day" | "week"
 	) => {
 		try {
 			let hoursNeeded = 720;
@@ -311,7 +342,7 @@ export function StatusPage() {
 				`${apiBase}/api/heartbeat`,
 				{
 					params: { monitor_name: monitorName, interval, hours: hoursNeeded },
-				},
+				}
 			);
 			const key = `${monitorName}:${interval}`;
 			setAggregatedHeartbeat((prev) => ({
@@ -321,7 +352,7 @@ export function StatusPage() {
 		} catch (error) {
 			console.error(
 				`Failed to fetch aggregated heartbeat for ${monitorName}:`,
-				error,
+				error
 			);
 		}
 	};
@@ -364,7 +395,7 @@ export function StatusPage() {
 										interval,
 										hours: hoursNeeded,
 									},
-								},
+								}
 							);
 							const key = `${monitor.name}:${interval}`;
 							setAggregatedHeartbeat((prev) => ({
@@ -403,7 +434,7 @@ export function StatusPage() {
 					`${apiBase}/api/status`,
 					{
 						params: { hours: 24 },
-					},
+					}
 				);
 				const fetchedMonitors = statusResponse.data.monitors;
 				setMonitors(fetchedMonitors);
@@ -412,8 +443,8 @@ export function StatusPage() {
 				const hasDown = fetchedMonitors.some((m) => !m.current_status.is_up);
 				const hasDegraded = fetchedMonitors.some((m) =>
 					m.history.some(
-						(r) => r.response_time && r.response_time * 1000 > degradedThreshold,
-					),
+						(r) => r.response_time && r.response_time * 1000 > degradedThreshold
+					)
 				);
 
 				if (hasDown) setOverallStatus("down");
@@ -463,8 +494,13 @@ export function StatusPage() {
 		});
 	}, [heartbeatIntervals, monitors]);
 
+	/**
+	 * Gets the status indicator text and status for a monitor.
+	 * @param monitor - The monitor to get status for
+	 * @returns Object containing display text and status level
+	 */
 	const getStatusIndicatorText = (
-		monitor: Monitor,
+		monitor: Monitor
 	): { text: string; status: "up" | "degraded" | "down" } => {
 		if (!monitor.current_status.is_up) {
 			return { text: t(language, "status_indicator.down"), status: "down" };
@@ -535,7 +571,7 @@ export function StatusPage() {
 			heartbeatItemCount,
 			degradedThreshold,
 			degradedPercentageThreshold,
-		],
+		]
 	);
 
 	const getHeartbeatTimestamps = useCallback(
@@ -552,7 +588,7 @@ export function StatusPage() {
 
 			return nodes.map((node) => new Date(node.timestamp));
 		},
-		[heartbeatIntervals, aggregatedHeartbeat, heartbeatItemCount],
+		[heartbeatIntervals, aggregatedHeartbeat, heartbeatItemCount]
 	);
 
 	const getHeartbeatResponseTimes = useCallback(
@@ -569,12 +605,12 @@ export function StatusPage() {
 
 			return nodes.map((node) => node.avg_response_time);
 		},
-		[heartbeatIntervals, aggregatedHeartbeat, heartbeatItemCount],
+		[heartbeatIntervals, aggregatedHeartbeat, heartbeatItemCount]
 	);
 
 	const getHeartbeatMetadata = useMemo(() => {
 		return (
-			monitor: Monitor,
+			monitor: Monitor
 		): Array<{
 			count: number;
 			avgResponseTime: number | null;
@@ -666,8 +702,13 @@ export function StatusPage() {
 		};
 	}, [heartbeatIntervals, aggregatedHeartbeat, language, heartbeatItemCount]);
 
+	/**
+	 * Gets the localized label for a monitor status.
+	 * @param status - The status value ('up', 'degraded', 'down', or 'none')
+	 * @returns Localized status label string
+	 */
 	const getStatusLabel = (
-		status: "up" | "degraded" | "down" | "none",
+		status: "up" | "degraded" | "down" | "none"
 	): string => {
 		if (status === "none") {
 			return "No Data";
@@ -699,8 +740,8 @@ export function StatusPage() {
 					{overallStatus === "up"
 						? t(language, "status.up")
 						: overallStatus === "degraded"
-							? t(language, "status.degraded")
-							: t(language, "status.down")}
+						? t(language, "status.degraded")
+						: t(language, "status.down")}
 				</p>
 			</div>
 
@@ -776,7 +817,7 @@ export function StatusPage() {
 										minute: "2-digit",
 										second: "2-digit",
 										timeZoneName: "short",
-									},
+									}
 								)}
 						</div>
 						<div
@@ -848,7 +889,7 @@ export function StatusPage() {
 								minute: "2-digit",
 								second: "2-digit",
 								timeZoneName: "short",
-							},
+							}
 						)}{" "}
 						・ {t(language, "footer.next_update")} {nextUpdate}
 						{t(language, "footer.seconds")}

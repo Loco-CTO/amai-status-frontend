@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import styles from "@/styles/theme.module.css";
 import { Selector } from "./Selector";
 import {
@@ -13,6 +13,10 @@ interface UpdateIntervalSelectorProps {
 	onIntervalChange?: (interval: number) => void;
 }
 
+/**
+ * Selector component for choosing status update interval.
+ * Allows users to control how frequently the dashboard refreshes.
+ */
 export function UpdateIntervalSelector({
 	onIntervalChange,
 }: UpdateIntervalSelectorProps) {
@@ -27,12 +31,15 @@ export function UpdateIntervalSelector({
 		setMounted(true);
 	}, [onIntervalChange]);
 
-	const handleIntervalChange = (value: string | number) => {
-		const newInterval = typeof value === "string" ? parseInt(value, 10) : value;
-		setInterval(newInterval);
-		localStorage.setItem(STORAGE_KEY_UPDATE_INTERVAL, String(newInterval));
-		onIntervalChange?.(newInterval);
-	};
+	const handleIntervalChange = useCallback(
+		(value: string | number) => {
+			const newInterval = typeof value === "string" ? parseInt(value, 10) : value;
+			setInterval(newInterval);
+			localStorage.setItem(STORAGE_KEY_UPDATE_INTERVAL, String(newInterval));
+			onIntervalChange?.(newInterval);
+		},
+		[onIntervalChange]
+	);
 
 	if (!mounted) return null;
 
