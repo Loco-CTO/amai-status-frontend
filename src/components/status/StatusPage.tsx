@@ -752,8 +752,7 @@ export function StatusPage() {
 					>
 						<div className={styles.tooltipTime}>
 							{hoveredMonitorIndex.typeLabel ||
-								(hoveredMonitorIndex.timestamp &&
-									hoveredMonitorIndex.timestamp.toLocaleString(
+								(hoveredMonitorIndex.timestamp?.toLocaleString(
 										language === "ja" ? "ja-JP" : language === "ko" ? "ko-KR" : "en-US",
 										{
 											year: "numeric",
