@@ -34,7 +34,7 @@ interface StatusItemProps {
 			typeLabel?: string;
 			degradedCount?: number;
 			downCount?: number;
-		} | null
+		} | null,
 	) => void;
 	onTooltipMouseMove: (x: number, y: number) => void;
 	onTooltipMouseLeave: () => void;
