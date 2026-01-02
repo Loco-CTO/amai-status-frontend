@@ -3,9 +3,10 @@ import "@/styles/theme.css";
 import { TitleUpdaterWrapper } from "@/components/common/TitleUpdaterWrapper";
 
 export async function generateMetadata(): Promise<Metadata> {
+	const apiBase =
+		process.env.NEXT_PUBLIC_SERVER_ADDRESS || "http://localhost:8182";
+
 	try {
-		const apiBase =
-			process.env.NEXT_PUBLIC_SERVER_ADDRESS || "http://localhost:8182";
 		const response = await fetch(`${apiBase}/api/config`, {
 			next: { revalidate: 3600 },
 		});
@@ -24,9 +25,6 @@ export async function generateMetadata(): Promise<Metadata> {
 	} catch (error) {
 		console.error("Failed to fetch metadata:", error);
 	}
-
-	const apiBase =
-		process.env.NEXT_PUBLIC_SERVER_ADDRESS || "http://localhost:8182";
 
 	return {
 		title: "Project 甘い | Status",

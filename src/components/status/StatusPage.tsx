@@ -9,7 +9,7 @@ import { HeartbeatIntervalSelector } from "../selectors/HeartbeatIntervalSelecto
 import { LoadingScreen } from "../common/LoadingScreen";
 import { BackendUnreachable } from "../errors/BackendUnreachable";
 import { Language, t, detectBrowserLanguage } from "@/lib/utils/i18n";
-import { getCookie, setCookie } from "@/lib/utils/cookies";
+import { getCookie } from "@/lib/utils/cookies";
 import axios from "axios";
 
 interface StatusRecord {
@@ -85,8 +85,6 @@ export function StatusPage() {
 	const [apiVersion, setApiVersion] = useState("");
 	const [frontendVersion, setFrontendVersion] = useState("");
 	const [hoveredMonitorIndex, setHoveredMonitorIndex] = useState<{
-		monitorIdx: number;
-		itemIdx: number;
 		timestamp: Date;
 		status: "up" | "degraded" | "down" | "none";
 		responseTime?: number | null;
@@ -406,18 +404,12 @@ export function StatusPage() {
 	}, [updateInterval]);
 
 	useEffect(() => {
+		if (monitors.length === 0) return;
 		monitors.forEach((monitor) => {
 			const interval = heartbeatIntervals[monitor.name] || "all";
 			fetchAggregatedHeartbeat(monitor.name, interval);
 		});
-	}, [heartbeatIntervals, monitors.length]);
-
-	useEffect(() => {
-		monitors.forEach((monitor) => {
-			const interval = heartbeatIntervals[monitor.name] || "all";
-			fetchAggregatedHeartbeat(monitor.name, interval);
-		});
-	}, [monitors]);
+	}, [heartbeatIntervals, monitors]);
 
 	const getStatusIndicatorText = (
 		monitor: Monitor
@@ -662,7 +654,7 @@ export function StatusPage() {
 
 			<main className={styles.container}>
 				<section className={styles.statusOverview}>
-					{monitors.map((monitor, monitorIdx) => {
+					{monitors.map((monitor) => {
 						const { text, status } = getStatusIndicatorText(monitor);
 						const uptime = getUptimePercentage(monitor);
 						const heartbeat = getHeartbeatData(monitor);
@@ -707,8 +699,6 @@ export function StatusPage() {
 										onHover={(item) => {
 											if (item !== null) {
 												setHoveredMonitorIndex({
-													monitorIdx,
-													itemIdx: -1,
 													timestamp: item.timestamp,
 													status: item.status,
 													responseTime: item.responseTime,

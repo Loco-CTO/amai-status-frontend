@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { detectBrowserLanguage, type Language } from "@/lib/utils/i18n";
+import { detectBrowserLanguage, type Language, t } from "@/lib/utils/i18n";
 import { getCookie } from "@/lib/utils/cookies";
 
 interface TitleUpdaterProps {
@@ -42,15 +42,4 @@ export function TitleUpdater({
 	}, [language, mounted, siteTitle]);
 
 	return null;
-}
-
-function t(language: Language, key: string): string {
-	const translations: Record<Language, Record<string, string>> = {
-		en: { "header.title": "Status" },
-		ja: { "header.title": "ステータス" },
-		ko: { "header.title": "상태" },
-		"zh-TW": { "header.title": "狀態" },
-		"zh-CN": { "header.title": "状态" },
-	};
-	return translations[language]?.[key] || "Status";
 }
