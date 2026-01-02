@@ -64,6 +64,17 @@ interface ConfigResponse {
 	};
 }
 
+interface HeartbeatItem {
+	timestamp: Date;
+	status: "up" | "degraded" | "down" | "none";
+	responseTime: number | null;
+	count?: number;
+	avgResponseTime?: number | null;
+	typeLabel?: string;
+	degradedCount?: number;
+	downCount?: number;
+}
+
 export function StatusPage() {
 	const [monitors, setMonitors] = useState<Monitor[]>([]);
 	const [loadingProgress, setLoadingProgress] = useState(0);
@@ -151,7 +162,7 @@ export function StatusPage() {
 		}
 	};
 
-	const handleHeartbeatHover = useCallback((item: any) => {
+	const handleHeartbeatHover = useCallback((item: HeartbeatItem | null) => {
 		if (item !== null) {
 			setHoveredMonitorIndex({
 				timestamp: item.timestamp,
@@ -162,7 +173,6 @@ export function StatusPage() {
 				typeLabel: item.typeLabel,
 				degradedCount: item.degradedCount,
 				downCount: item.downCount,
-				interval: item.interval,
 			});
 		} else {
 			setHoveredMonitorIndex(null);
@@ -877,23 +887,19 @@ export function StatusPage() {
 		</>
 	);
 
-	return (
+	return backendUnreachable ? (
+		<BackendUnreachable apiBase={apiBase} language={language} />
+	) : (
 		<>
-			{backendUnreachable ? (
-				<BackendUnreachable apiBase={apiBase} language={language} />
-			) : (
-				<>
-					{showLoadingScreen && (
-						<LoadingScreen
-							apiBase={apiBase}
-							language={language}
-							progress={loadingProgress}
-							onFadeComplete={handleLoadingFadeComplete}
-						/>
-					)}
-					{mainContent}
-				</>
+			{showLoadingScreen && (
+				<LoadingScreen
+					apiBase={apiBase}
+					language={language}
+					progress={loadingProgress}
+					onFadeComplete={handleLoadingFadeComplete}
+				/>
 			)}
+			{mainContent}
 		</>
 	);
 }
