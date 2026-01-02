@@ -16,7 +16,7 @@ export function useStatusPageState() {
 	const [nextUpdate, setNextUpdate] = useState<number>(15);
 	const [updateInterval, setUpdateInterval] = useState<number>(15);
 	const [overallStatus, setOverallStatus] = useState<"up" | "degraded" | "down">(
-		"up"
+		"up",
 	);
 	const [language, setLanguage] = useState<Language>("en");
 	const [mounted, setMounted] = useState(false);

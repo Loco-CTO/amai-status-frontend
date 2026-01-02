@@ -70,7 +70,7 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 			state.heartbeatItemCount,
 			state.degradedThreshold,
 			state.degradedPercentageThreshold,
-		]
+		],
 	);
 
 	const getHeartbeatTimestamps = useCallback(
@@ -91,7 +91,7 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 			state.heartbeatIntervals,
 			state.aggregatedHeartbeat,
 			state.heartbeatItemCount,
-		]
+		],
 	);
 
 	const getHeartbeatResponseTimes = useCallback(
@@ -112,12 +112,12 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 			state.heartbeatIntervals,
 			state.aggregatedHeartbeat,
 			state.heartbeatItemCount,
-		]
+		],
 	);
 
 	const getHeartbeatMetadata = useMemo(() => {
 		return (
-			monitor: Monitor
+			monitor: Monitor,
 		): Array<{
 			count: number;
 			avgResponseTime: number | null;
@@ -143,8 +143,8 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 				state.language === "ja"
 					? "ja-JP"
 					: state.language === "ko"
-					? "ko-KR"
-					: "en-US";
+						? "ko-KR"
+						: "en-US";
 
 			/**
 			 * Gets the timezone abbreviation for the current locale.
