@@ -1,13 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import styles from "@/styles/theme.module.css";
-import { StatusIcon, HeartbeatBar } from "./StatusComponents";
 import { StatusHeader } from "./StatusHeader";
 import { StatusItem } from "./StatusItem";
-import { LanguageSelector } from "../selectors/LanguageSelector";
 import { UpdateIntervalSelector } from "../selectors/UpdateIntervalSelector";
-import { HeartbeatIntervalSelector } from "../selectors/HeartbeatIntervalSelector";
 import { LoadingScreen } from "../common/LoadingScreen";
 import { BackendUnreachable } from "../errors/BackendUnreachable";
 import { Language, t, detectBrowserLanguage } from "@/lib/utils/i18n";

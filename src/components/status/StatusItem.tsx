@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { memo } from "react";
 import styles from "@/styles/theme.module.css";
 import { HeartbeatBar } from "./StatusComponents";
 import { HeartbeatIntervalSelector } from "../selectors/HeartbeatIntervalSelector";

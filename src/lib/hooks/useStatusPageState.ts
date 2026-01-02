@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { Language } from "@/lib/utils/i18n";
 import type { Monitor, AggregatedHeartbeatNode } from "@/types/models";
 import type { HoveredMonitorInfo } from "@/types/ui";
