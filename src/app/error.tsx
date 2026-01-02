@@ -5,6 +5,12 @@ import { t, type Language, detectBrowserLanguage } from "@/lib/utils/i18n";
 import { getCookie } from "@/lib/utils/cookies";
 import styles from "@/styles/theme.module.css";
 
+/**
+ * Error page component shown when an error occurs in the application.
+ * Displays localized error message with a retry button.
+ * @param error - The error object with optional digest
+ * @param reset - Function to reset the error boundary
+ */
 export default function Error({
 	error,
 	reset,

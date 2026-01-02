@@ -12,6 +12,12 @@ const translations: Record<Language, Translations> = {
 	"zh-CN": require("@/locales/zh-CN.json"),
 };
 
+/**
+ * Translates a key path to a localized string.
+ * @param language - The language to translate to
+ * @param path - Dot-separated path to the translation key (e.g., 'status_indicator.up')
+ * @returns The translated string, or the path if translation not found
+ */
 export function t(language: Language, path: string): string {
 	const keys = path.split(".");
 	let current: string | Translations | undefined = translations[language];

@@ -6,6 +6,10 @@ import { t, type Language, detectBrowserLanguage } from "@/lib/utils/i18n";
 import { getCookie } from "@/lib/utils/cookies";
 import styles from "@/styles/theme.module.css";
 
+/**
+ * 404 Not Found page component.
+ * Displays a localized message when page is not found with a link back to home.
+ */
 export default function NotFound() {
 	const [language, setLanguage] = useState<Language>("en");
 	const [mounted, setMounted] = useState(false);
