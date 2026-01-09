@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useCallback, useRef } from "react";
 import styles from "@/styles/theme.module.css";
 import { StatusHeader } from "./StatusHeader";
@@ -15,60 +13,11 @@ import { useStatusPageState } from "@/lib/hooks/useStatusPageState";
 import { useHeartbeatComputation } from "./useHeartbeatComputation";
 import { useStatusComputation } from "./useStatusComputation";
 import { useTooltipComputation } from "./useTooltipComputation";
-import { Monitor } from "@/types/models";
+import type { Monitor } from "@/types/models";
+import type { ConfigResponse, AggregatedHeartbeatResponse } from "@/types/api";
+import type { HeartbeatItem } from "@/types/ui";
+import type { ApiStatusResponse } from "@/lib/services/apiService";
 import axios from "axios";
-
-interface StatusRecord {
-	timestamp: string;
-	is_up: boolean;
-	status_code: number | null;
-	response_time: number | null;
-}
-
-interface AggregatedHeartbeatNode {
-	timestamp: string;
-	is_up: boolean;
-	status: string;
-	response_time: number | null;
-	count: number;
-	avg_response_time: number | null;
-	degraded_count: number;
-	down_count: number;
-	issue_percentage: number;
-}
-
-interface AggregatedHeartbeatResponse {
-	monitor_name: string;
-	interval: string;
-	heartbeat: AggregatedHeartbeatNode[];
-}
-
-interface ApiResponse {
-	timestamp: string;
-	monitors: Monitor[];
-}
-
-interface ConfigResponse {
-	configuration: {
-		degraded_threshold: number;
-		footerText: string;
-		siteTitle?: string;
-		degraded_percentage_threshold?: number;
-		[key: string]: string | number | boolean | null | undefined;
-	};
-}
-
-interface HeartbeatItem {
-	timestamp: Date;
-	status: "up" | "degraded" | "down" | "none";
-	responseTime: number | null;
-	count?: number;
-	avgResponseTime?: number | null;
-	typeLabel?: string;
-	degradedCount?: number;
-	downCount?: number;
-	interval?: "all" | "hour" | "day" | "week";
-}
 
 /**
  * Main status page component that displays monitor status and heartbeat data.
@@ -243,16 +192,20 @@ export function StatusPage() {
 		try {
 			const response = await axios.get<ConfigResponse>(`${apiBase}/api/config`);
 			const threshold = response.data.configuration.degraded_threshold;
-			if (threshold) {
+			if (threshold && typeof threshold === "number") {
 				state.setDegradedThreshold(threshold);
 			}
 			const percentageThreshold =
 				response.data.configuration.degraded_percentage_threshold;
-			if (percentageThreshold !== undefined) {
+			if (
+				percentageThreshold !== undefined &&
+				percentageThreshold !== null &&
+				typeof percentageThreshold === "number"
+			) {
 				state.setDegradedPercentageThreshold(percentageThreshold);
 			}
 			const footer = response.data.configuration.footerText;
-			if (footer) {
+			if (footer && typeof footer === "string") {
 				state.setFooterText(footer);
 			}
 		} catch (error) {
@@ -281,14 +234,19 @@ export function StatusPage() {
 	 */
 	const fetchStatus = async () => {
 		try {
-			const response = await axios.get<ApiResponse>(`${apiBase}/api/status`, {
-				params: { hours: 24 },
-			});
+			const response = await axios.get<ApiStatusResponse>(
+				`${apiBase}/api/status`,
+				{
+					params: { hours: 24 },
+				}
+			);
 			state.setMonitors(response.data.monitors);
 			state.setLastUpdated(new Date());
 
-			const hasDown = response.data.monitors.some((m) => !m.current_status.is_up);
-			const hasDegraded = response.data.monitors.some((m) => {
+			const hasDown = response.data.monitors.some(
+				(m: Monitor) => !m.current_status.is_up
+			);
+			const hasDegraded = response.data.monitors.some((m: Monitor) => {
 				if (m.history.length > 0) {
 					const latestRecord = m.history[m.history.length - 1];
 					return (
@@ -433,7 +391,7 @@ export function StatusPage() {
 				fetchConfig();
 				state.setLoadingProgress(20);
 
-				const statusResponse = await axios.get<ApiResponse>(
+				const statusResponse = await axios.get<ApiStatusResponse>(
 					`${apiBase}/api/status`,
 					{
 						params: { hours: 24 },
@@ -443,8 +401,10 @@ export function StatusPage() {
 				state.setMonitors(fetchedMonitors);
 				state.setLastUpdated(new Date());
 
-				const hasDown = fetchedMonitors.some((m) => !m.current_status.is_up);
-				const hasDegraded = fetchedMonitors.some((m) => {
+				const hasDown = fetchedMonitors.some(
+					(m: Monitor) => !m.current_status.is_up
+				);
+				const hasDegraded = fetchedMonitors.some((m: Monitor) => {
 					if (m.history.length > 0) {
 						const latestRecord = m.history[m.history.length - 1];
 						return (

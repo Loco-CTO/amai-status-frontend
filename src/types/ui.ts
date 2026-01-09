@@ -7,6 +7,7 @@ export interface HeartbeatItem {
 	typeLabel?: string;
 	degradedCount?: number;
 	downCount?: number;
+	interval?: "all" | "hour" | "day" | "week";
 }
 
 export interface HoveredMonitorInfo {
