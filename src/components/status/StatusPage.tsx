@@ -155,14 +155,14 @@ export function StatusPage() {
 				state.setHoveredMonitorIndex(null);
 			}
 		},
-		[state]
+		[state],
 	);
 
 	const handleTooltipMouseMove = useCallback(
 		(x: number, y: number) => {
 			state.setTooltipPos({ x, y });
 		},
-		[state]
+		[state],
 	);
 
 	/**
@@ -187,7 +187,7 @@ export function StatusPage() {
 		(interval: number) => {
 			state.setUpdateInterval(interval);
 		},
-		[state]
+		[state],
 	);
 
 	/**
@@ -202,13 +202,13 @@ export function StatusPage() {
 				[monitor.name]: interval,
 			}));
 		},
-		[state]
+		[state],
 	);
 
 	const createHeartbeatIntervalChangeHandler = useCallback(
 		(monitor: Monitor) => (interval: "all" | "hour" | "day" | "week") =>
 			handleHeartbeatIntervalChange(monitor, interval),
-		[handleHeartbeatIntervalChange]
+		[handleHeartbeatIntervalChange],
 	);
 
 	useEffect(() => {
@@ -314,7 +314,7 @@ export function StatusPage() {
 	 */
 	const fetchAggregatedHeartbeat = async (
 		monitorName: string,
-		interval: "all" | "hour" | "day" | "week"
+		interval: "all" | "hour" | "day" | "week",
 	) => {
 		try {
 			let hoursNeeded = 720;
@@ -332,7 +332,7 @@ export function StatusPage() {
 				`${apiBase}/api/heartbeat`,
 				{
 					params: { monitor_name: monitorName, interval, hours: hoursNeeded },
-				}
+				},
 			);
 			const key = `${monitorName}:${interval}`;
 			state.setAggregatedHeartbeat((prev) => ({
@@ -342,7 +342,7 @@ export function StatusPage() {
 		} catch (error) {
 			console.error(
 				`Failed to fetch aggregated heartbeat for ${monitorName}:`,
-				error
+				error,
 			);
 		}
 	};
@@ -390,7 +390,7 @@ export function StatusPage() {
 										interval,
 										hours: hoursNeeded,
 									},
-								}
+								},
 							);
 							const key = `${monitor.name}:${interval}`;
 							state.setAggregatedHeartbeat((prev) => ({
@@ -437,7 +437,7 @@ export function StatusPage() {
 					`${apiBase}/api/status`,
 					{
 						params: { hours: 24 },
-					}
+					},
 				);
 				const fetchedMonitors = statusResponse.data.monitors;
 				state.setMonitors(fetchedMonitors);
@@ -530,7 +530,7 @@ export function StatusPage() {
 	// Use tooltip computation hook
 	const { computeTooltipData } = useTooltipComputation(
 		state.language,
-		getStatusLabel
+		getStatusLabel,
 	);
 
 	if (!state.mounted) {
