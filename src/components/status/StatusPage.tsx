@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useCallback, useRef } from "react";
 import styles from "@/styles/theme.module.css";
 import { StatusHeader } from "./StatusHeader";
