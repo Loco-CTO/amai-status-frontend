@@ -231,6 +231,22 @@ export function StatusPage() {
 	};
 
 	/**
+	 * Fetches the client IP address from the API.
+	 */
+	const fetchClientIP = async () => {
+		try {
+			const response = await axios.get<{ client_ip: string; status: string }>(
+				`${apiBase}/client-ip`,
+			);
+			if (response.data.client_ip) {
+				state.setClientIP(response.data.client_ip);
+			}
+		} catch (error) {
+			console.error("Failed to fetch client IP:", error);
+		}
+	};
+
+	/**
 	 * Fetches the current status of all monitors from the API.
 	 * Updates monitors state and overall status indicators.
 	 */
@@ -391,6 +407,7 @@ export function StatusPage() {
 				state.setBackendUnreachable(false);
 
 				fetchConfig();
+				fetchClientIP();
 				state.setLoadingProgress(20);
 
 				const statusResponse = await axios.get<ApiStatusResponse>(
@@ -589,7 +606,7 @@ export function StatusPage() {
 				</div>
 				<p className={styles.footerText}>
 					{state.footerText}
-					{state.apiVersion || state.frontendVersion ? (
+					{state.apiVersion || state.frontendVersion || state.clientIP ? (
 						<>
 							<br />
 							<span
@@ -603,6 +620,8 @@ export function StatusPage() {
 								{state.apiVersion && `API v${state.apiVersion}`}
 								{state.apiVersion && state.frontendVersion && " · "}
 								{state.frontendVersion && `Frontend v${state.frontendVersion}`}
+								{(state.apiVersion || state.frontendVersion) && state.clientIP && " · "}
+								{state.clientIP && `IP: ${state.clientIP}`}
 							</span>
 						</>
 					) : null}
