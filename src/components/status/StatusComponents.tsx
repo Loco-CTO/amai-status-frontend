@@ -1,4 +1,11 @@
-import { useState, useRef, useEffect, memo, useCallback } from "react";
+import {
+	useState,
+	useRef,
+	useEffect,
+	memo,
+	useCallback,
+	type CSSProperties,
+} from "react";
 import styles from "@/styles/theme.module.css";
 
 interface StatusIndicatorProps {
@@ -72,6 +79,12 @@ interface HeartbeatBarProps {
 	interval?: "all" | "hour" | "day" | "week";
 }
 
+interface HeartbeatRenderSegments {
+	downPercent: number;
+	degradedPercent: number;
+	upPercent: number;
+}
+
 const HeartbeatBarComponent = ({
 	data,
 	timestamps,
@@ -83,6 +96,53 @@ const HeartbeatBarComponent = ({
 	maxItems = 90,
 	interval = "all",
 }: HeartbeatBarProps) => {
+	/**
+	 * Builds stacked segment percentages for aggregated heartbeat nodes.
+	 * Returns null for non-aggregated or invalid buckets.
+	 */
+	const getCompositeSegments = useCallback(
+		(item: {
+			count?: number;
+			degradedCount?: number;
+			downCount?: number;
+		}): HeartbeatRenderSegments | null => {
+			const total = item.count ?? 0;
+			if (total <= 1) {
+				return null;
+			}
+
+			const downCount = Math.max(0, Math.min(total, item.downCount ?? 0));
+			const degradedCount = Math.max(
+				0,
+				Math.min(total - downCount, item.degradedCount ?? 0),
+			);
+			const upCount = Math.max(0, total - downCount - degradedCount);
+
+			return {
+				downPercent: (downCount / total) * 100,
+				degradedPercent: (degradedCount / total) * 100,
+				upPercent: (upCount / total) * 100,
+			};
+		},
+		[],
+	);
+
+	const getCompositeBackground = useCallback(
+		(segments: HeartbeatRenderSegments) => {
+			const downEnd = segments.downPercent;
+			const degradedEnd = segments.downPercent + segments.degradedPercent;
+
+			return `linear-gradient(to top,
+			var(--error) 0%,
+			var(--error) ${downEnd}%,
+			var(--warning) ${downEnd}%,
+			var(--warning) ${degradedEnd}%,
+			var(--success) ${degradedEnd}%,
+			var(--success) 100%)`;
+		},
+		[],
+	);
+
 	/**
 	 * Calculates the effective maximum items to display based on interval.
 	 * Adjusts the count to ensure visibility for different time ranges.
@@ -304,14 +364,30 @@ const HeartbeatBarComponent = ({
 						transition: translateX !== 0 ? "transform 0.4s ease" : "none",
 					}}
 				>
-					{displayItems.map((item) => (
-						<div
-							key={item.id}
-							className={`${styles.heartbeatDay} ${styles[item.status]}`}
-							aria-label={`${item.status} status`}
-							onMouseEnter={createItemMouseEnterHandler(item)}
-						/>
-					))}
+					{displayItems.map((item) => {
+						const segments = getCompositeSegments(item);
+						const isComposite = segments !== null;
+						const compositeStyle: CSSProperties | undefined =
+							isComposite && segments
+								? ({
+										"--heartbeat-composite-gradient": getCompositeBackground(segments),
+										background: "var(--heartbeat-composite-gradient)",
+										height: "35px",
+									} as CSSProperties)
+								: undefined;
+
+						return (
+							<div
+								key={item.id}
+								className={`${styles.heartbeatDay} ${styles[item.status]} ${
+									isComposite ? styles.composite : ""
+								}`}
+								style={compositeStyle}
+								aria-label={`${item.status} status`}
+								onMouseEnter={createItemMouseEnterHandler(item)}
+							/>
+						);
+					})}
 				</div>
 			</div>
 		</div>

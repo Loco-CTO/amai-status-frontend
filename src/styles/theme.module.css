@@ -382,6 +382,31 @@
 		0 0 16px rgba(255, 255, 255, 0.2);
 }
 
+.heartbeatDay.composite {
+	position: relative;
+	overflow: visible;
+	height: 35px;
+	box-shadow: none;
+}
+
+.heartbeatDay.composite::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: var(--heartbeat-composite-gradient);
+	filter: blur(4px);
+	opacity: 0.4;
+	transform: scale(1.04);
+	z-index: -1;
+	pointer-events: none;
+}
+
+.heartbeatDay.composite:hover::before {
+	filter: blur(7px);
+	opacity: 0.65;
+}
+
 .uptimeText {
 	font-size: 0.85rem;
 	color: var(--subtext);
