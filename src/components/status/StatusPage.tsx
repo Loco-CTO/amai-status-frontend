@@ -24,7 +24,10 @@ import axios from "axios";
 interface BulkHeartbeatResponse {
 	data: Record<
 		string,
-		Record<"all" | "hour" | "day" | "week", AggregatedHeartbeatResponse["heartbeat"]>
+		Record<
+			"all" | "hour" | "day" | "week",
+			AggregatedHeartbeatResponse["heartbeat"]
+		>
 	>;
 }
 
@@ -340,7 +343,8 @@ export function StatusPage() {
 		);
 
 		const payload = response.data.data || {};
-		const flattened: Record<string, AggregatedHeartbeatResponse["heartbeat"]> = {};
+		const flattened: Record<string, AggregatedHeartbeatResponse["heartbeat"]> =
+			{};
 
 		for (const monitor of monitors) {
 			const monitorPayload = payload[monitor.name] || {
