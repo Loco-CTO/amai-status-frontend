@@ -9,7 +9,6 @@ interface LoadingScreenProps {
 	apiBase: string;
 	language: Language;
 	progress?: number;
-	monitorLoadStates?: Record<string, "pending" | "loading" | "done" | "error">;
 	onFadeComplete?: () => void;
 }
 
@@ -25,7 +24,6 @@ export function LoadingScreen({
 	language,
 	apiBase,
 	progress = 0,
-	monitorLoadStates = {},
 	onFadeComplete,
 }: LoadingScreenProps) {
 	const [displayProgress, setDisplayProgress] = useState(progress);
@@ -81,28 +79,6 @@ export function LoadingScreen({
 						? `${Math.round(displayProgress)}%`
 						: t(language, "header.ready")}
 				</p>
-				{Object.keys(monitorLoadStates).length > 0 && (
-					<div className={styles.monitorLoadingList}>
-						{Object.entries(monitorLoadStates).map(([monitorName, status]) => (
-							<div key={monitorName} className={styles.monitorLoadingItem}>
-								<span className={styles.monitorLoadingName}>{monitorName}</span>
-								<span
-									className={`${styles.monitorLoadingBadge} ${
-										status === "done"
-											? styles.monitorLoadingDone
-											: status === "loading"
-												? styles.monitorLoadingActive
-												: status === "error"
-													? styles.monitorLoadingError
-													: styles.monitorLoadingPending
-									}`}
-								>
-									{status}
-								</span>
-							</div>
-						))}
-					</div>
-				)}
 			</div>
 		</div>
 	);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useRef, useState } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import styles from "@/styles/theme.module.css";
 import { StatusHeader } from "./StatusHeader";
 import { StatusItem } from "./StatusItem";
@@ -31,8 +31,6 @@ interface BulkHeartbeatResponse {
 	>;
 }
 
-type MonitorLoadState = "pending" | "loading" | "done" | "error";
-
 /**
  * Main status page component that displays monitor status and heartbeat data.
  * Handles API calls, state management, and real-time updates.
@@ -40,9 +38,6 @@ type MonitorLoadState = "pending" | "loading" | "done" | "error";
 export function StatusPage() {
 	const state = useStatusPageState();
 	const pendingHeartbeatRequestsRef = useRef<Set<string>>(new Set());
-	const [monitorLoadStates, setMonitorLoadStates] = useState<
-		Record<string, MonitorLoadState>
-	>({});
 
 	/**
 	 * Calculates adjusted tooltip position to keep it within viewport bounds.
@@ -335,19 +330,10 @@ export function StatusPage() {
 	const fetchBulkPrecomputedHeartbeat = async (monitors: Monitor[]) => {
 		if (monitors.length === 0) return;
 
-		setMonitorLoadStates(
-			Object.fromEntries(monitors.map((monitor) => [monitor.name, "pending"])),
-		);
-
 		let completed = 0;
 		const total = monitors.length;
 
 		const loadMonitor = async (monitor: Monitor) => {
-			setMonitorLoadStates((prev) => ({
-				...prev,
-				[monitor.name]: "loading",
-			}));
-
 			try {
 				const response = await axios.get<BulkHeartbeatResponse>(
 					`${apiBase}/api/heartbeat/bulk`,
@@ -374,20 +360,11 @@ export function StatusPage() {
 					[`${monitor.name}:day`]: monitorPayload.day || [],
 					[`${monitor.name}:week`]: monitorPayload.week || [],
 				}));
-
-				setMonitorLoadStates((prev) => ({
-					...prev,
-					[monitor.name]: "done",
-				}));
 			} catch (error) {
 				console.error(
 					`Failed to preload precomputed heartbeat for ${monitor.name}:`,
 					error,
 				);
-				setMonitorLoadStates((prev) => ({
-					...prev,
-					[monitor.name]: "error",
-				}));
 			} finally {
 				completed += 1;
 				const progress = 70 + (completed / total) * 30;
@@ -644,7 +621,6 @@ export function StatusPage() {
 					apiBase={apiBase}
 					language={state.language}
 					progress={state.loadingProgress}
-					monitorLoadStates={monitorLoadStates}
 					onFadeComplete={handleLoadingFadeComplete}
 				/>
 			)}
