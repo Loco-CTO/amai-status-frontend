@@ -1,4 +1,11 @@
-import { useState, useRef, useEffect, memo, useCallback } from "react";
+import {
+	useState,
+	useRef,
+	useEffect,
+	memo,
+	useCallback,
+	type CSSProperties,
+} from "react";
 import styles from "@/styles/theme.module.css";
 
 interface StatusIndicatorProps {
@@ -360,6 +367,14 @@ const HeartbeatBarComponent = ({
 					{displayItems.map((item) => {
 						const segments = getCompositeSegments(item);
 						const isComposite = segments !== null;
+						const compositeStyle: CSSProperties | undefined =
+							isComposite && segments
+								? ({
+										"--heartbeat-composite-gradient": getCompositeBackground(segments),
+										background: "var(--heartbeat-composite-gradient)",
+										height: "35px",
+									} as CSSProperties)
+								: undefined;
 
 						return (
 							<div
@@ -367,14 +382,7 @@ const HeartbeatBarComponent = ({
 								className={`${styles.heartbeatDay} ${styles[item.status]} ${
 									isComposite ? styles.composite : ""
 								}`}
-								style={
-									isComposite && segments
-										? {
-												background: getCompositeBackground(segments),
-												height: "35px",
-											}
-										: undefined
-								}
+								style={compositeStyle}
 								aria-label={`${item.status} status`}
 								onMouseEnter={createItemMouseEnterHandler(item)}
 							/>
