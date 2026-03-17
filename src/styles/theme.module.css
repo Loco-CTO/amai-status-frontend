@@ -1034,6 +1034,64 @@
 	animation: fadeIn 0.5s ease-out 0.2s backwards;
 }
 
+.monitorLoadingList {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	max-height: 220px;
+	overflow-y: auto;
+	padding-right: 0.25rem;
+}
+
+.monitorLoadingItem {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 0.78rem;
+	color: var(--subtext);
+	padding: 0.35rem 0.55rem;
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.05);
+}
+
+.monitorLoadingName {
+	max-width: 75%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.monitorLoadingBadge {
+	font-size: 0.7rem;
+	line-height: 1;
+	padding: 0.25rem 0.45rem;
+	border-radius: 999px;
+	text-transform: uppercase;
+	letter-spacing: 0.3px;
+	font-weight: 700;
+}
+
+.monitorLoadingPending {
+	background: rgba(255, 255, 255, 0.16);
+	color: #d7d7d7;
+}
+
+.monitorLoadingActive {
+	background: rgba(255, 170, 0, 0.22);
+	color: #ffd08a;
+}
+
+.monitorLoadingDone {
+	background: rgba(0, 255, 136, 0.2);
+	color: #85ffcb;
+}
+
+.monitorLoadingError {
+	background: rgba(255, 68, 102, 0.24);
+	color: #ff9cb0;
+}
+
 @keyframes fadeIn {
 	from {
 		opacity: 0;
@@ -1068,6 +1126,10 @@
 
 	.loadingText {
 		font-size: 0.8rem;
+	}
+
+	.monitorLoadingItem {
+		font-size: 0.74rem;
 	}
 }
 .errorContainer {
