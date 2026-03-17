@@ -27,6 +27,7 @@ export function useStatusPageState() {
 	const [footerText, setFooterText] = useState("");
 	const [apiVersion, setApiVersion] = useState("");
 	const [frontendVersion, setFrontendVersion] = useState("");
+	const [clientIP, setClientIP] = useState("");
 	const [hoveredMonitorIndex, setHoveredMonitorIndex] =
 		useState<HoveredMonitorInfo | null>(null);
 	const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
@@ -70,6 +71,8 @@ export function useStatusPageState() {
 		setApiVersion,
 		frontendVersion,
 		setFrontendVersion,
+		clientIP,
+		setClientIP,
 		hoveredMonitorIndex,
 		setHoveredMonitorIndex,
 		tooltipPos,

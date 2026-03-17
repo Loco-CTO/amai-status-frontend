@@ -32,8 +32,8 @@ export const apiService = {
 	},
 
 	/**
-	 * Fetches version information for API and frontend.
-	 * @returns Version object with api_version and frontend_version
+	 * Fetches API version information.
+	 * @returns Version object with api_version
 	 */
 	async getVersions(): Promise<VersionResponse> {
 		const response = await apiClient.get<VersionResponse>("/api/versions");

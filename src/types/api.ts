@@ -15,7 +15,6 @@ export interface StatusResponse {
 
 export interface VersionResponse {
 	api_version: string;
-	frontend_version?: string;
 }
 
 export interface AggregatedHeartbeatResponse {

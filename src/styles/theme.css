@@ -23,7 +23,7 @@ body {
 		-apple-system,
 		BlinkMacSystemFont,
 		sans-serif;
-	background: linear-gradient(135deg, #000000 0%, #111111 50%, #000000 100%);
+	background: #0f0f0f;
 	color: var(--text);
 	min-height: 100vh;
 	margin-bottom: 35px;
