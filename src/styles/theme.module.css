@@ -383,16 +383,28 @@
 }
 
 .heartbeatDay.composite {
+	position: relative;
+	overflow: visible;
 	height: 35px;
-	box-shadow:
-		0 0 4px rgba(0, 255, 136, 0.35),
-		0 0 16px rgba(0, 255, 136, 0.18);
+	box-shadow: none;
 }
 
-.heartbeatDay.composite:hover {
-	box-shadow:
-		0 0 12px rgba(0, 255, 136, 0.55),
-		0 0 24px rgba(0, 255, 136, 0.28);
+.heartbeatDay.composite::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: var(--heartbeat-composite-gradient);
+	filter: blur(4px);
+	opacity: 0.4;
+	transform: scale(1.04);
+	z-index: -1;
+	pointer-events: none;
+}
+
+.heartbeatDay.composite:hover::before {
+	filter: blur(7px);
+	opacity: 0.65;
 }
 
 .uptimeText {
