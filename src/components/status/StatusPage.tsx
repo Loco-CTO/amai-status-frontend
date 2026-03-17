@@ -283,10 +283,7 @@ export function StatusPage() {
 		interval: "all" | "hour" | "day" | "week",
 	) => {
 		const key = `${monitorName}:${interval}`;
-		if (
-			pendingHeartbeatRequestsRef.current.has(key) ||
-			state.aggregatedHeartbeat[key]
-		) {
+		if (pendingHeartbeatRequestsRef.current.has(key)) {
 			return;
 		}
 
