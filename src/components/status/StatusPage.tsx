@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 import styles from "@/styles/theme.module.css";
 import { StatusHeader } from "./StatusHeader";
 import { StatusItem } from "./StatusItem";
@@ -31,6 +31,8 @@ interface BulkHeartbeatResponse {
 	>;
 }
 
+type MonitorLoadState = "pending" | "loading" | "done" | "error";
+
 /**
  * Main status page component that displays monitor status and heartbeat data.
  * Handles API calls, state management, and real-time updates.
@@ -38,6 +40,9 @@ interface BulkHeartbeatResponse {
 export function StatusPage() {
 	const state = useStatusPageState();
 	const pendingHeartbeatRequestsRef = useRef<Set<string>>(new Set());
+	const [monitorLoadStates, setMonitorLoadStates] = useState<
+		Record<string, MonitorLoadState>
+	>({});
 
 	/**
 	 * Calculates adjusted tooltip position to keep it within viewport bounds.
@@ -324,42 +329,73 @@ export function StatusPage() {
 	};
 
 	/**
-	 * Fetches precomputed heartbeat data for all monitors and intervals in one request.
+	 * Fetches precomputed heartbeat data monitor-by-monitor so loading can be tracked per monitor.
 	 * @param monitors - Monitors to preload heartbeat data for
 	 */
 	const fetchBulkPrecomputedHeartbeat = async (monitors: Monitor[]) => {
 		if (monitors.length === 0) return;
 
-		const monitorNames = monitors.map((m) => m.name).join(",");
-		const response = await axios.get<BulkHeartbeatResponse>(
-			`${apiBase}/api/heartbeat/bulk`,
-			{
-				params: {
-					monitor_names: monitorNames,
-					intervals: "all,hour,day,week",
-				},
-				timeout: 30000,
-			},
+		setMonitorLoadStates(
+			Object.fromEntries(monitors.map((monitor) => [monitor.name, "pending"])),
 		);
 
-		const payload = response.data.data || {};
-		const flattened: Record<string, AggregatedHeartbeatResponse["heartbeat"]> =
-			{};
+		let completed = 0;
+		const total = monitors.length;
 
-		for (const monitor of monitors) {
-			const monitorPayload = payload[monitor.name] || {
-				all: [],
-				hour: [],
-				day: [],
-				week: [],
-			};
-			flattened[`${monitor.name}:all`] = monitorPayload.all || [];
-			flattened[`${monitor.name}:hour`] = monitorPayload.hour || [];
-			flattened[`${monitor.name}:day`] = monitorPayload.day || [];
-			flattened[`${monitor.name}:week`] = monitorPayload.week || [];
-		}
+		const loadMonitor = async (monitor: Monitor) => {
+			setMonitorLoadStates((prev) => ({
+				...prev,
+				[monitor.name]: "loading",
+			}));
 
-		state.setAggregatedHeartbeat(flattened);
+			try {
+				const response = await axios.get<BulkHeartbeatResponse>(
+					`${apiBase}/api/heartbeat/bulk`,
+					{
+						params: {
+							monitor_names: monitor.name,
+							intervals: "all,hour,day,week",
+						},
+						timeout: 30000,
+					},
+				);
+
+				const monitorPayload = response.data.data?.[monitor.name] || {
+					all: [],
+					hour: [],
+					day: [],
+					week: [],
+				};
+
+				state.setAggregatedHeartbeat((prev) => ({
+					...prev,
+					[`${monitor.name}:all`]: monitorPayload.all || [],
+					[`${monitor.name}:hour`]: monitorPayload.hour || [],
+					[`${monitor.name}:day`]: monitorPayload.day || [],
+					[`${monitor.name}:week`]: monitorPayload.week || [],
+				}));
+
+				setMonitorLoadStates((prev) => ({
+					...prev,
+					[monitor.name]: "done",
+				}));
+			} catch (error) {
+				console.error(
+					`Failed to preload precomputed heartbeat for ${monitor.name}:`,
+					error,
+				);
+				setMonitorLoadStates((prev) => ({
+					...prev,
+					[monitor.name]: "error",
+				}));
+			} finally {
+				completed += 1;
+				const progress = 70 + (completed / total) * 30;
+				state.setLoadingProgress(progress);
+			}
+		};
+
+		await Promise.all(monitors.map((monitor) => loadMonitor(monitor)));
 	};
 
 	const initializeRef = useRef(false);
@@ -608,6 +644,7 @@ export function StatusPage() {
 					apiBase={apiBase}
 					language={state.language}
 					progress={state.loadingProgress}
+					monitorLoadStates={monitorLoadStates}
 					onFadeComplete={handleLoadingFadeComplete}
 				/>
 			)}
