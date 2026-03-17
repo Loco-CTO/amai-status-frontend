@@ -21,12 +21,20 @@ import type { HoveredMonitorInfo } from "@/types/ui";
 import type { ApiStatusResponse } from "@/lib/services/apiService";
 import axios from "axios";
 
+interface BulkHeartbeatResponse {
+	data: Record<
+		string,
+		Record<"all" | "hour" | "day" | "week", AggregatedHeartbeatResponse["heartbeat"]>
+	>;
+}
+
 /**
  * Main status page component that displays monitor status and heartbeat data.
  * Handles API calls, state management, and real-time updates.
  */
 export function StatusPage() {
 	const state = useStatusPageState();
+	const pendingHeartbeatRequestsRef = useRef<Set<string>>(new Set());
 
 	/**
 	 * Calculates adjusted tooltip position to keep it within viewport bounds.
@@ -62,27 +70,6 @@ export function StatusPage() {
 
 	const apiBase =
 		process.env.NEXT_PUBLIC_SERVER_ADDRESS || "http://localhost:8000";
-
-	const progressTrackerRef = useRef({
-		totalTasks: 0,
-		completedTasks: 0,
-	});
-
-	/**
-	 * Updates the loading progress based on completed tasks.
-	 * @param increment - The number of tasks completed (default: 1)
-	 */
-	const updateProgressByTaskCompletion = (increment = 1) => {
-		const tracker = progressTrackerRef.current;
-		tracker.completedTasks += increment;
-		if (tracker.totalTasks > 0) {
-			const baseProgress = 20;
-			const preloadRange = 80;
-			const progressPercentage =
-				(tracker.completedTasks / tracker.totalTasks) * preloadRange;
-			state.setLoadingProgress(baseProgress + progressPercentage);
-		}
-	};
 
 	/**
 	 * Handles heartbeat item hover events to display tooltip.
@@ -292,6 +279,15 @@ export function StatusPage() {
 		monitorName: string,
 		interval: "all" | "hour" | "day" | "week",
 	) => {
+		const key = `${monitorName}:${interval}`;
+		if (
+			pendingHeartbeatRequestsRef.current.has(key) ||
+			state.aggregatedHeartbeat[key]
+		) {
+			return;
+		}
+
+		pendingHeartbeatRequestsRef.current.add(key);
 		try {
 			let hoursNeeded = 720;
 			if (interval === "hour") {
@@ -310,7 +306,6 @@ export function StatusPage() {
 					params: { monitor_name: monitorName, interval, hours: hoursNeeded },
 				},
 			);
-			const key = `${monitorName}:${interval}`;
 			state.setAggregatedHeartbeat((prev) => ({
 				...prev,
 				[key]: response.data.heartbeat,
@@ -320,74 +315,47 @@ export function StatusPage() {
 				`Failed to fetch aggregated heartbeat for ${monitorName}:`,
 				error,
 			);
+		} finally {
+			pendingHeartbeatRequestsRef.current.delete(key);
 		}
 	};
 
 	/**
-	 * Preloads heartbeat data for all intervals of multiple monitors.
-	 * Updates progress tracker as requests complete.
-	 * @param monitorsToPreload - Monitors to preload data for
+	 * Fetches precomputed heartbeat data for all monitors and intervals in one request.
+	 * @param monitors - Monitors to preload heartbeat data for
 	 */
-	const preloadAllIntervals = async (monitorsToPreload: Monitor[]) => {
-		const intervals: Array<"all" | "hour" | "day" | "week"> = [
-			"all",
-			"hour",
-			"day",
-			"week",
-		];
-		const totalRequests = monitorsToPreload.length * intervals.length;
+	const fetchBulkPrecomputedHeartbeat = async (monitors: Monitor[]) => {
+		if (monitors.length === 0) return;
 
-		progressTrackerRef.current.totalTasks = totalRequests;
-		progressTrackerRef.current.completedTasks = 0;
+		const monitorNames = monitors.map((m) => m.name).join(",");
+		const response = await axios.get<BulkHeartbeatResponse>(
+			`${apiBase}/api/heartbeat/bulk`,
+			{
+				params: {
+					monitor_names: monitorNames,
+					intervals: "all,hour,day,week",
+				},
+				timeout: 30000,
+			},
+		);
 
-		try {
-			const preloadPromises: Promise<void>[] = [];
+		const payload = response.data.data || {};
+		const flattened: Record<string, AggregatedHeartbeatResponse["heartbeat"]> = {};
 
-			for (const monitor of monitorsToPreload) {
-				for (const interval of intervals) {
-					const promise = (async () => {
-						try {
-							let hoursNeeded = 720;
-							if (interval === "hour") {
-								hoursNeeded = 96;
-							} else if (interval === "day") {
-								hoursNeeded = 120 * 24;
-							} else if (interval === "week") {
-								hoursNeeded = 104 * 7 * 24;
-							} else if (interval === "all") {
-								hoursNeeded = 30 * 24;
-							}
-
-							const response = await axios.get<AggregatedHeartbeatResponse>(
-								`${apiBase}/api/heartbeat`,
-								{
-									params: {
-										monitor_name: monitor.name,
-										interval,
-										hours: hoursNeeded,
-									},
-								},
-							);
-							const key = `${monitor.name}:${interval}`;
-							state.setAggregatedHeartbeat((prev) => ({
-								...prev,
-								[key]: response.data.heartbeat,
-							}));
-						} catch (error) {
-							console.error(`Failed to preload ${monitor.name}:${interval}:`, error);
-						} finally {
-							updateProgressByTaskCompletion();
-						}
-					})();
-
-					preloadPromises.push(promise);
-				}
-			}
-
-			await Promise.all(preloadPromises);
-		} catch (error) {
-			console.error("Preload error:", error);
+		for (const monitor of monitors) {
+			const monitorPayload = payload[monitor.name] || {
+				all: [],
+				hour: [],
+				day: [],
+				week: [],
+			};
+			flattened[`${monitor.name}:all`] = monitorPayload.all || [];
+			flattened[`${monitor.name}:hour`] = monitorPayload.hour || [];
+			flattened[`${monitor.name}:day`] = monitorPayload.day || [];
+			flattened[`${monitor.name}:week`] = monitorPayload.week || [];
 		}
+
+		state.setAggregatedHeartbeat(flattened);
 	};
 
 	const initializeRef = useRef(false);
@@ -403,19 +371,19 @@ export function StatusPage() {
 			state.setLoadingProgress(0);
 
 			try {
-				await axios.get(`${apiBase}/api/status`, { timeout: 15000 });
-				state.setBackendUnreachable(false);
-
-				fetchConfig();
-				fetchClientIP();
-				state.setLoadingProgress(20);
-
 				const statusResponse = await axios.get<ApiStatusResponse>(
 					`${apiBase}/api/status`,
 					{
 						params: { hours: 24 },
+						timeout: 15000,
 					},
 				);
+				state.setBackendUnreachable(false);
+
+				fetchConfig();
+				fetchClientIP();
+				state.setLoadingProgress(70);
+
 				const fetchedMonitors = statusResponse.data.monitors;
 				state.setMonitors(fetchedMonitors);
 				state.setLastUpdated(new Date());
@@ -437,12 +405,9 @@ export function StatusPage() {
 				else if (hasDegraded) state.setOverallStatus("degraded");
 				else state.setOverallStatus("up");
 
-				if (fetchedMonitors.length > 0) {
-					await preloadAllIntervals(fetchedMonitors);
-					state.setLoadingProgress(100);
-				} else {
-					state.setLoadingProgress(100);
-				}
+				await fetchBulkPrecomputedHeartbeat(fetchedMonitors);
+
+				state.setLoadingProgress(100);
 
 				state.setShowLoadingScreen(false);
 			} catch (error) {
