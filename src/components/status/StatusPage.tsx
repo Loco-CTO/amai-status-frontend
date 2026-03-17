@@ -20,6 +20,7 @@ import type { ConfigResponse, AggregatedHeartbeatResponse } from "@/types/api";
 import type { HoveredMonitorInfo } from "@/types/ui";
 import type { ApiStatusResponse } from "@/lib/services/apiService";
 import axios from "axios";
+import packageJson from "../../../package.json";
 
 interface BulkHeartbeatResponse {
 	data: Record<
@@ -181,6 +182,8 @@ export function StatusPage() {
 	 * Updates degraded thresholds and version states.
 	 */
 	const fetchConfig = async () => {
+		state.setFrontendVersion(packageJson.version);
+
 		try {
 			const response = await axios.get<ConfigResponse>(`${apiBase}/api/config`);
 			const threshold = response.data.configuration.degraded_threshold;
@@ -207,13 +210,9 @@ export function StatusPage() {
 		try {
 			const versionResponse = await axios.get<{
 				api_version: string;
-				frontend_version?: string;
 			}>(`${apiBase}/api/versions`);
 			if (versionResponse.data.api_version) {
 				state.setApiVersion(versionResponse.data.api_version);
-			}
-			if (versionResponse.data.frontend_version) {
-				state.setFrontendVersion(versionResponse.data.frontend_version);
 			}
 		} catch (error) {
 			console.error("Failed to fetch versions:", error);
