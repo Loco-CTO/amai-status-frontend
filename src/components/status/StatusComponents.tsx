@@ -180,8 +180,8 @@ const HeartbeatBarComponent = ({
 		return slicedData.map((status, i) => ({
 			status,
 			id: `item-${i}`,
-			timestamp: timestamps[startIdx + i] ?? null,
-			responseTime: responseTimes?.[startIdx + i] ?? null,
+			timestamp: timestamps[startIdx + i] || new Date(),
+			responseTime: responseTimes?.[startIdx + i] || null,
 			count: metadata?.[startIdx + i]?.count,
 			avgResponseTime: metadata?.[startIdx + i]?.avgResponseTime,
 			typeLabel: metadata?.[startIdx + i]?.typeLabel,
@@ -209,8 +209,8 @@ const HeartbeatBarComponent = ({
 				slicedData.map((status, i) => ({
 					status,
 					id: `item-${startIdx + i}`,
-					timestamp: timestamps[startIdx + i] ?? null,
-					responseTime: responseTimes?.[startIdx + i] ?? null,
+					timestamp: timestamps[startIdx + i] || new Date(),
+					responseTime: responseTimes?.[startIdx + i] || null,
 					count: metadata?.[startIdx + i]?.count,
 					avgResponseTime: metadata?.[startIdx + i]?.avgResponseTime,
 					typeLabel: metadata?.[startIdx + i]?.typeLabel,
