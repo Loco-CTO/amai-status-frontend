@@ -1,14 +1,15 @@
 import { useCallback, useMemo } from "react";
-import type { AggregatedHeartbeatNode, Monitor, StatusRecord } from "@/types/models";
+import type {
+	AggregatedHeartbeatNode,
+	Monitor,
+	StatusRecord,
+} from "@/types/models";
 import { t } from "@/lib/utils/i18n";
 import type { Language } from "@/lib/utils/i18n";
 
 interface HeartbeatComputationState {
 	heartbeatIntervals: Record<string, "all" | "hour" | "day" | "week">;
-	aggregatedHeartbeat: Record<
-		string,
-		AggregatedHeartbeatNode[]
-	>;
+	aggregatedHeartbeat: Record<string, AggregatedHeartbeatNode[]>;
 	heartbeatItemCount: number;
 	degradedThreshold: number;
 	degradedPercentageThreshold: number;
