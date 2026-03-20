@@ -54,7 +54,9 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 					return Array(state.heartbeatItemCount).fill("none");
 				}
 
-				return nodes.map((record) => {
+				const sliced = nodes.slice(-state.heartbeatItemCount);
+
+				return sliced.map((record) => {
 					if (!record.is_up) {
 						return "down";
 					}
@@ -164,7 +166,7 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 			const { interval, isAggregated, nodes } = getHeartbeatNodes(monitor);
 
 			if (!isAggregated) {
-				return monitor.history.slice(0, state.heartbeatItemCount).map(() => ({
+				return monitor.history.slice(-state.heartbeatItemCount).map(() => ({
 					count: 1,
 					avgResponseTime: null,
 					typeLabel: t(state.language, "time_range.all"),
