@@ -22,16 +22,6 @@ import type { ApiStatusResponse } from "@/lib/services/apiService";
 import axios from "axios";
 import packageJson from "../../../package.json";
 
-interface BulkHeartbeatResponse {
-	data: Record<
-		string,
-		Record<
-			"all" | "hour" | "day" | "week",
-			AggregatedHeartbeatResponse["heartbeat"]
-		>
-	>;
-}
-
 /**
  * Main status page component that displays monitor status and heartbeat data.
  * Handles API calls, state management, and real-time updates.
@@ -91,6 +81,8 @@ export function StatusPage() {
 					typeLabel: item.typeLabel,
 					degradedCount: item.degradedCount,
 					downCount: item.downCount,
+					degradedDurationSeconds: item.degradedDurationSeconds,
+					downDurationSeconds: item.downDurationSeconds,
 					interval: item.interval,
 				});
 			} else {
@@ -281,6 +273,10 @@ export function StatusPage() {
 		monitorName: string,
 		interval: "all" | "hour" | "day" | "week",
 	) => {
+		if (interval === "all") {
+			return;
+		}
+
 		const key = `${monitorName}:${interval}`;
 		if (pendingHeartbeatRequestsRef.current.has(key)) {
 			return;
@@ -295,8 +291,6 @@ export function StatusPage() {
 				hoursNeeded = 120 * 24;
 			} else if (interval === "week") {
 				hoursNeeded = 104 * 7 * 24;
-			} else if (interval === "all") {
-				hoursNeeded = 30 * 24;
 			}
 
 			const response = await axios.get<AggregatedHeartbeatResponse>(
@@ -317,58 +311,6 @@ export function StatusPage() {
 		} finally {
 			pendingHeartbeatRequestsRef.current.delete(key);
 		}
-	};
-
-	/**
-	 * Fetches precomputed heartbeat data monitor-by-monitor so loading can be tracked per monitor.
-	 * @param monitors - Monitors to preload heartbeat data for
-	 */
-	const fetchBulkPrecomputedHeartbeat = async (monitors: Monitor[]) => {
-		if (monitors.length === 0) return;
-
-		let completed = 0;
-		const total = monitors.length;
-
-		const loadMonitor = async (monitor: Monitor) => {
-			try {
-				const response = await axios.get<BulkHeartbeatResponse>(
-					`${apiBase}/api/heartbeat/bulk`,
-					{
-						params: {
-							monitor_names: monitor.name,
-							intervals: "all,hour,day,week",
-						},
-						timeout: 30000,
-					},
-				);
-
-				const monitorPayload = response.data.data?.[monitor.name] || {
-					all: [],
-					hour: [],
-					day: [],
-					week: [],
-				};
-
-				state.setAggregatedHeartbeat((prev) => ({
-					...prev,
-					[`${monitor.name}:all`]: monitorPayload.all || [],
-					[`${monitor.name}:hour`]: monitorPayload.hour || [],
-					[`${monitor.name}:day`]: monitorPayload.day || [],
-					[`${monitor.name}:week`]: monitorPayload.week || [],
-				}));
-			} catch (error) {
-				console.error(
-					`Failed to preload precomputed heartbeat for ${monitor.name}:`,
-					error,
-				);
-			} finally {
-				completed += 1;
-				const progress = 70 + (completed / total) * 30;
-				state.setLoadingProgress(progress);
-			}
-		};
-
-		await Promise.all(monitors.map((monitor) => loadMonitor(monitor)));
 	};
 
 	const initializeRef = useRef(false);
@@ -417,8 +359,6 @@ export function StatusPage() {
 				if (hasDown) state.setOverallStatus("down");
 				else if (hasDegraded) state.setOverallStatus("degraded");
 				else state.setOverallStatus("up");
-
-				await fetchBulkPrecomputedHeartbeat(fetchedMonitors);
 
 				state.setLoadingProgress(100);
 
@@ -552,6 +492,8 @@ export function StatusPage() {
 								showIssues={tooltipData.showIssues}
 								degradedCount={tooltipData.degradedCount}
 								downCount={tooltipData.downCount}
+								degradedDuration={tooltipData.degradedDuration}
+								downDuration={tooltipData.downDuration}
 								pingText={tooltipData.pingText}
 								sampleCount={tooltipData.sampleCount}
 								showSampleCount={tooltipData.showSampleCount}

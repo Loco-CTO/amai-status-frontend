@@ -59,6 +59,8 @@ interface HeartbeatBarProps {
 		typeLabel: string;
 		degradedCount?: number;
 		downCount?: number;
+		degradedDurationSeconds?: number;
+		downDurationSeconds?: number;
 	}>;
 	onHover?: (
 		item: {
@@ -70,6 +72,8 @@ interface HeartbeatBarProps {
 			typeLabel?: string;
 			degradedCount?: number;
 			downCount?: number;
+			degradedDurationSeconds?: number;
+			downDurationSeconds?: number;
 			interval?: "all" | "hour" | "day" | "week";
 		} | null,
 	) => void;
@@ -173,6 +177,8 @@ const HeartbeatBarComponent = ({
 			typeLabel?: string;
 			degradedCount?: number;
 			downCount?: number;
+			degradedDurationSeconds?: number;
+			downDurationSeconds?: number;
 		}>
 	>(() => {
 		const slicedData = data.slice(-effectiveMaxItems);
@@ -187,6 +193,9 @@ const HeartbeatBarComponent = ({
 			typeLabel: metadata?.[startIdx + i]?.typeLabel,
 			degradedCount: metadata?.[startIdx + i]?.degradedCount,
 			downCount: metadata?.[startIdx + i]?.downCount,
+			degradedDurationSeconds:
+				metadata?.[startIdx + i]?.degradedDurationSeconds,
+			downDurationSeconds: metadata?.[startIdx + i]?.downDurationSeconds,
 		}));
 	});
 	const [translateX, setTranslateX] = useState(0);
@@ -216,6 +225,10 @@ const HeartbeatBarComponent = ({
 					typeLabel: metadata?.[startIdx + i]?.typeLabel,
 					degradedCount: metadata?.[startIdx + i]?.degradedCount,
 					downCount: metadata?.[startIdx + i]?.downCount,
+					degradedDurationSeconds:
+						metadata?.[startIdx + i]?.degradedDurationSeconds,
+					downDurationSeconds:
+						metadata?.[startIdx + i]?.downDurationSeconds,
 				})),
 			);
 			setTranslateX(0);
@@ -253,6 +266,8 @@ const HeartbeatBarComponent = ({
 				typeLabel: item.typeLabel,
 				degradedCount: item.degradedCount,
 				downCount: item.downCount,
+				degradedDurationSeconds: item.degradedDurationSeconds,
+				downDurationSeconds: item.downDurationSeconds,
 				interval,
 			});
 		},
@@ -311,6 +326,9 @@ const HeartbeatBarComponent = ({
 				typeLabel: metadata?.[startIdx + i]?.typeLabel,
 				degradedCount: metadata?.[startIdx + i]?.degradedCount,
 				downCount: metadata?.[startIdx + i]?.downCount,
+				degradedDurationSeconds:
+					metadata?.[startIdx + i]?.degradedDurationSeconds,
+				downDurationSeconds: metadata?.[startIdx + i]?.downDurationSeconds,
 			}));
 
 			setDisplayItems(newDisplayItems);

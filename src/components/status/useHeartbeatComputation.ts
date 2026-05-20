@@ -1,37 +1,74 @@
 import { useCallback, useMemo } from "react";
-import { Monitor } from "@/types/models";
+import type {
+	AggregatedHeartbeatNode,
+	Monitor,
+	StatusRecord,
+} from "@/types/models";
 import { t } from "@/lib/utils/i18n";
 import type { Language } from "@/lib/utils/i18n";
 
 interface HeartbeatComputationState {
 	heartbeatIntervals: Record<string, "all" | "hour" | "day" | "week">;
-	aggregatedHeartbeat: Record<
-		string,
-		Array<{
-			timestamp: string;
-			count: number;
-			avg_response_time: number | null;
-			issue_percentage: number;
-			degraded_count: number;
-			down_count: number;
-		}>
-	>;
+	aggregatedHeartbeat: Record<string, AggregatedHeartbeatNode[]>;
 	heartbeatItemCount: number;
 	degradedThreshold: number;
 	degradedPercentageThreshold: number;
 	language: Language;
 }
 
+type AllIntervalNode = StatusRecord;
+
 /**
  * Custom hook for computing heartbeat and status data.
  * Encapsulates complex calculations to reduce component complexity.
  */
 export function useHeartbeatComputation(state: HeartbeatComputationState) {
-	const getHeartbeatData = useCallback(
-		(monitor: Monitor): Array<"up" | "degraded" | "down" | "none"> => {
+	const getHeartbeatNodes = useCallback(
+		(monitor: Monitor) => {
 			const interval = state.heartbeatIntervals[monitor.name] || "all";
 			const key = `${monitor.name}:${interval}`;
-			const nodes = state.aggregatedHeartbeat[key] || [];
+
+			if (interval === "all") {
+				return {
+					interval,
+					isAggregated: false as const,
+					nodes: monitor.history,
+				};
+			}
+
+			return {
+				interval,
+				isAggregated: true as const,
+				nodes: state.aggregatedHeartbeat[key] || [],
+			};
+		},
+		[state.heartbeatIntervals, state.aggregatedHeartbeat],
+	);
+
+	const getHeartbeatData = useCallback(
+		(monitor: Monitor): Array<"up" | "degraded" | "down" | "none"> => {
+			const { interval, isAggregated, nodes } = getHeartbeatNodes(monitor);
+
+			if (!isAggregated) {
+				if (nodes.length === 0) {
+					return Array(state.heartbeatItemCount).fill("none");
+				}
+
+				const sliced = nodes.slice(-state.heartbeatItemCount);
+
+				return sliced.map((record) => {
+					if (!record.is_up) {
+						return "down";
+					}
+					if (
+						record.response_time &&
+						record.response_time * 1000 > state.degradedThreshold
+					) {
+						return "degraded";
+					}
+					return "up";
+				});
+			}
 
 			if (nodes.length === 0) {
 				if (monitor.history.length === 0) {
@@ -52,14 +89,11 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 				if (node.down_count > 0) {
 					return "down";
 				}
-				if (interval === "all") {
-					if (node.degraded_count > 0) {
-						return "degraded";
-					}
-				} else {
-					if (node.issue_percentage > state.degradedPercentageThreshold) {
-						return "degraded";
-					}
+				if (node.degraded_count > 0) {
+					return "degraded";
+				}
+				if (node.issue_percentage > state.degradedPercentageThreshold) {
+					return "degraded";
 				}
 				return "up";
 			});
@@ -75,14 +109,16 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 
 	const getHeartbeatTimestamps = useCallback(
 		(monitor: Monitor): Date[] => {
-			const interval = state.heartbeatIntervals[monitor.name] || "all";
-			const key = `${monitor.name}:${interval}`;
-			const nodes = state.aggregatedHeartbeat[key] || [];
+			const { isAggregated, nodes } = getHeartbeatNodes(monitor);
 
-			if (nodes.length === 0) {
+			if (!isAggregated) {
 				return monitor.history
 					.slice(-state.heartbeatItemCount)
 					.map((r) => new Date(r.timestamp));
+			}
+
+			if (nodes.length === 0) {
+				return [];
 			}
 
 			return nodes.map((node) => new Date(node.timestamp));
@@ -96,14 +132,16 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 
 	const getHeartbeatResponseTimes = useCallback(
 		(monitor: Monitor): (number | null)[] => {
-			const interval = state.heartbeatIntervals[monitor.name] || "all";
-			const key = `${monitor.name}:${interval}`;
-			const nodes = state.aggregatedHeartbeat[key] || [];
+			const { isAggregated, nodes } = getHeartbeatNodes(monitor);
 
-			if (nodes.length === 0) {
+			if (!isAggregated) {
 				return monitor.history
 					.slice(-state.heartbeatItemCount)
 					.map((r) => r.response_time);
+			}
+
+			if (nodes.length === 0) {
+				return [];
 			}
 
 			return nodes.map((node) => node.avg_response_time);
@@ -124,19 +162,25 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 			typeLabel: string;
 			degradedCount?: number;
 			downCount?: number;
+			degradedDurationSeconds?: number;
+			downDurationSeconds?: number;
 		}> => {
-			const interval = state.heartbeatIntervals[monitor.name] || "all";
-			const key = `${monitor.name}:${interval}`;
-			const nodes = state.aggregatedHeartbeat[key] || [];
+			const { interval, isAggregated, nodes } = getHeartbeatNodes(monitor);
 
-			if (nodes.length === 0) {
-				return monitor.history.slice(0, state.heartbeatItemCount).map(() => ({
+			if (!isAggregated) {
+				return monitor.history.slice(-state.heartbeatItemCount).map(() => ({
 					count: 1,
 					avgResponseTime: null,
 					typeLabel: t(state.language, "time_range.all"),
 					degradedCount: 0,
 					downCount: 0,
+					degradedDurationSeconds: 0,
+					downDurationSeconds: 0,
 				}));
+			}
+
+			if (nodes.length === 0) {
+				return [];
 			}
 
 			const localeMap =
@@ -212,6 +256,8 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 					typeLabel,
 					degradedCount: node.degraded_count,
 					downCount: node.down_count,
+					degradedDurationSeconds: node.degraded_duration_seconds,
+					downDurationSeconds: node.down_duration_seconds,
 				};
 			});
 		};
@@ -220,6 +266,7 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 		state.aggregatedHeartbeat,
 		state.language,
 		state.heartbeatItemCount,
+		getHeartbeatNodes,
 	]);
 
 	return {

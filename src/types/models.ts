@@ -29,5 +29,7 @@ export interface AggregatedHeartbeatNode {
 	avg_response_time: number | null;
 	degraded_count: number;
 	down_count: number;
+	degraded_duration_seconds?: number;
+	down_duration_seconds?: number;
 	issue_percentage: number;
 }
