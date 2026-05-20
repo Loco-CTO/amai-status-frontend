@@ -11,6 +11,8 @@ interface HeartbeatTooltipProps {
 	showIssues: boolean;
 	degradedCount?: number;
 	downCount?: number;
+	degradedDuration?: string;
+	downDuration?: string;
 	pingText: string;
 	sampleCount?: number;
 	showSampleCount: boolean;
@@ -30,6 +32,8 @@ export const HeartbeatTooltip = memo(function HeartbeatTooltip({
 	showIssues,
 	degradedCount,
 	downCount,
+	degradedDuration,
+	downDuration,
 	pingText,
 	sampleCount,
 	showSampleCount,
@@ -51,12 +55,13 @@ export const HeartbeatTooltip = memo(function HeartbeatTooltip({
 				<div className={styles.tooltipIssues}>
 					{degradedCount !== undefined && degradedCount > 0 && (
 						<div className={styles.tooltipIssueDegraded}>
-							{t(language, "heartbeat.degraded")}: {degradedCount}
+							{t(language, "heartbeat.degraded")}:{" "}
+							{degradedDuration || degradedCount}
 						</div>
 					)}
 					{downCount !== undefined && downCount > 0 && (
 						<div className={styles.tooltipIssueDown}>
-							{t(language, "heartbeat.down")}: {downCount}
+							{t(language, "heartbeat.down")}: {downDuration || downCount}
 						</div>
 					)}
 				</div>
