@@ -7,6 +7,8 @@ export interface HoveredMonitorInfo {
 	typeLabel?: string;
 	degradedCount?: number;
 	downCount?: number;
+	degradedDurationSeconds?: number;
+	downDurationSeconds?: number;
 	interval?: "all" | "hour" | "day" | "week";
 }
 
