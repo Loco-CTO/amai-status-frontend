@@ -14,6 +14,8 @@ interface StatusHeartbeatSectionProps {
 		typeLabel: string;
 		degradedCount?: number;
 		downCount?: number;
+		degradedDurationSeconds?: number;
+		downDurationSeconds?: number;
 	}>;
 	uptime: number;
 	interval: HeartbeatInterval;
@@ -29,6 +31,8 @@ interface StatusHeartbeatSectionProps {
 			typeLabel?: string;
 			degradedCount?: number;
 			downCount?: number;
+			degradedDurationSeconds?: number;
+			downDurationSeconds?: number;
 			interval?: "all" | "hour" | "day" | "week";
 		} | null,
 	) => void;

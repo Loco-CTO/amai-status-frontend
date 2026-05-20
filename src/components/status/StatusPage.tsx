@@ -81,6 +81,8 @@ export function StatusPage() {
 					typeLabel: item.typeLabel,
 					degradedCount: item.degradedCount,
 					downCount: item.downCount,
+					degradedDurationSeconds: item.degradedDurationSeconds,
+					downDurationSeconds: item.downDurationSeconds,
 					interval: item.interval,
 				});
 			} else {
@@ -490,6 +492,8 @@ export function StatusPage() {
 								showIssues={tooltipData.showIssues}
 								degradedCount={tooltipData.degradedCount}
 								downCount={tooltipData.downCount}
+								degradedDuration={tooltipData.degradedDuration}
+								downDuration={tooltipData.downDuration}
 								pingText={tooltipData.pingText}
 								sampleCount={tooltipData.sampleCount}
 								showSampleCount={tooltipData.showSampleCount}

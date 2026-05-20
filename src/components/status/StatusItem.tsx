@@ -17,6 +17,8 @@ interface StatusItemProps {
 		typeLabel: string;
 		degradedCount?: number;
 		downCount?: number;
+		degradedDurationSeconds?: number;
+		downDurationSeconds?: number;
 	}>;
 	uptime: number;
 	statusText: string;
@@ -34,6 +36,8 @@ interface StatusItemProps {
 			typeLabel?: string;
 			degradedCount?: number;
 			downCount?: number;
+			degradedDurationSeconds?: number;
+			downDurationSeconds?: number;
 			interval?: "all" | "hour" | "day" | "week";
 		} | null,
 	) => void;
