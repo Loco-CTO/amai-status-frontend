@@ -162,6 +162,8 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 			typeLabel: string;
 			degradedCount?: number;
 			downCount?: number;
+			degradedDurationSeconds?: number;
+			downDurationSeconds?: number;
 		}> => {
 			const { interval, isAggregated, nodes } = getHeartbeatNodes(monitor);
 
@@ -172,6 +174,8 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 					typeLabel: t(state.language, "time_range.all"),
 					degradedCount: 0,
 					downCount: 0,
+					degradedDurationSeconds: 0,
+					downDurationSeconds: 0,
 				}));
 			}
 
@@ -252,6 +256,8 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 					typeLabel,
 					degradedCount: node.degraded_count,
 					downCount: node.down_count,
+					degradedDurationSeconds: node.degraded_duration_seconds,
+					downDurationSeconds: node.down_duration_seconds,
 				};
 			});
 		};
