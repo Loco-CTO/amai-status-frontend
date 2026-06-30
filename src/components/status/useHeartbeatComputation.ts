@@ -6,6 +6,7 @@ import type {
 } from "@/types/models";
 import { t } from "@/lib/utils/i18n";
 import type { Language } from "@/lib/utils/i18n";
+import { getEffectiveHeartbeatItemCount } from "@/lib/utils/heartbeat";
 
 interface HeartbeatComputationState {
 	heartbeatIntervals: Record<string, "all" | "hour" | "day" | "week">;
@@ -153,6 +154,48 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 		],
 	);
 
+	const getHeartbeatUptime = useCallback(
+		(monitor: Monitor): number => {
+			const { interval, isAggregated, nodes } = getHeartbeatNodes(monitor);
+			const effectiveMaxItems = getEffectiveHeartbeatItemCount(
+				state.heartbeatItemCount,
+				interval,
+			);
+
+			if (!isAggregated || nodes.length === 0) {
+				const visibleHistory = monitor.history.slice(-effectiveMaxItems);
+
+				if (visibleHistory.length === 0) {
+					return 100;
+				}
+
+				const upCount = visibleHistory.filter((record) => record.is_up).length;
+				return Math.round((upCount / visibleHistory.length) * 100 * 10) / 10;
+			}
+
+			const visibleNodes = nodes.slice(-effectiveMaxItems);
+			const totals = visibleNodes.reduce(
+				(acc, node) => {
+					const total = Math.max(0, node.count);
+					const downCount = Math.max(0, Math.min(total, node.down_count));
+
+					return {
+						total: acc.total + total,
+						up: acc.up + total - downCount,
+					};
+				},
+				{ total: 0, up: 0 },
+			);
+
+			if (totals.total === 0) {
+				return 100;
+			}
+
+			return Math.round((totals.up / totals.total) * 100 * 10) / 10;
+		},
+		[getHeartbeatNodes, state.heartbeatItemCount],
+	);
+
 	const getHeartbeatMetadata = useMemo(() => {
 		return (
 			monitor: Monitor,
@@ -273,6 +316,7 @@ export function useHeartbeatComputation(state: HeartbeatComputationState) {
 		getHeartbeatData,
 		getHeartbeatTimestamps,
 		getHeartbeatResponseTimes,
+		getHeartbeatUptime,
 		getHeartbeatMetadata,
 	};
 }

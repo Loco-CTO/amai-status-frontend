@@ -10,7 +10,7 @@ interface StatusComputationState {
 
 /**
  * Custom hook for computing status-related data.
- * Encapsulates status indicator and uptime calculations to reduce component complexity.
+ * Encapsulates status indicator calculations to reduce component complexity.
  */
 export function useStatusComputation(state: StatusComputationState) {
 	/**
@@ -43,17 +43,6 @@ export function useStatusComputation(state: StatusComputationState) {
 	);
 
 	/**
-	 * Calculates the uptime percentage for a monitor based on its history.
-	 * @param monitor - The monitor to calculate uptime for
-	 * @returns Uptime percentage (0-100) rounded to one decimal place
-	 */
-	const getUptimePercentage = useCallback((monitor: Monitor): number => {
-		if (monitor.history.length === 0) return 100;
-		const upCount = monitor.history.filter((r) => r.is_up).length;
-		return Math.round((upCount / monitor.history.length) * 100 * 10) / 10;
-	}, []);
-
-	/**
 	 * Gets the localized label for a monitor status.
 	 * @param status - The status value ('up', 'degraded', 'down', or 'none')
 	 * @returns Localized status label string
@@ -71,7 +60,6 @@ export function useStatusComputation(state: StatusComputationState) {
 
 	return {
 		getStatusIndicatorText,
-		getUptimePercentage,
 		getStatusLabel,
 	};
 }
