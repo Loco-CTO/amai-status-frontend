@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useRef, useState, useEffect, useCallback } from "react";
 import styles from "@/styles/theme.module.css";
 
@@ -12,7 +13,7 @@ interface SelectorProps {
 	options: SelectorOption[];
 	value: string | number;
 	onChange: (value: string | number) => void;
-	icon?: string;
+	icon?: ReactNode;
 	label?: string;
 	expandUp?: boolean;
 	ariaLabel?: string;
@@ -23,7 +24,7 @@ interface SelectorProps {
  * @param options - Array of selectable options
  * @param value - Currently selected value
  * @param onChange - Callback when selection changes
- * @param icon - Optional Material Symbols icon name
+ * @param icon - Optional selector icon
  * @param label - Optional custom label text
  * @param expandUp - Whether dropdown expands upward (default: false)
  * @param ariaLabel - Accessible label for the button
@@ -96,7 +97,7 @@ export function Selector({
 				onClick={handleToggle}
 				aria-label={ariaLabel}
 			>
-				{icon && <span className="material-symbols-outlined">{icon}</span>}
+				{icon}
 				<span>{label || currentOption?.label}</span>
 			</button>
 
