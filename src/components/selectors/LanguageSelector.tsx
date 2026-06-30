@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { LanguageIcon } from "@heroicons/react/24/outline";
 import styles from "@/styles/theme.module.css";
 import {
 	Language,
@@ -54,7 +55,9 @@ export function LanguageSelector({
 				options={LANGUAGE_OPTIONS}
 				value={language}
 				onChange={handleLanguageChange}
-				icon="language"
+				icon={
+					<LanguageIcon className={styles.selectorInlineIcon} aria-hidden />
+				}
 				label={getLanguageName(language)}
 				ariaLabel="Language selector"
 			/>
