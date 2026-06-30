@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { ClockIcon } from "@heroicons/react/24/outline";
 import styles from "@/styles/theme.module.css";
 import { Selector } from "./Selector";
 import {
@@ -49,7 +50,7 @@ export function UpdateIntervalSelector({
 				options={INTERVAL_OPTIONS}
 				value={interval}
 				onChange={handleIntervalChange}
-				icon="schedule"
+				icon={<ClockIcon className={styles.selectorInlineIcon} aria-hidden />}
 				expandUp
 				ariaLabel="Update interval selector"
 			/>
