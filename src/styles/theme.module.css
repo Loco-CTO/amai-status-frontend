@@ -641,6 +641,13 @@
 	transition: transform 0.3s ease;
 }
 
+.selectorInlineIcon {
+	width: 1rem;
+	height: 1rem;
+	flex: 0 0 1rem;
+	display: block;
+}
+
 .selectorIcon.open {
 	transform: rotate(180deg);
 }
@@ -949,8 +956,10 @@
 		display: none;
 	}
 
-	.selectorButton .material-symbols-outlined {
-		font-size: 1.2rem;
+	.selectorInlineIcon {
+		width: 1.2rem;
+		height: 1.2rem;
+		flex-basis: 1.2rem;
 	}
 
 	.heartbeatSelector {
