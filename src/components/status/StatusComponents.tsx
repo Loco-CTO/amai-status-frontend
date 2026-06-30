@@ -7,6 +7,7 @@ import {
 	type CSSProperties,
 } from "react";
 import styles from "@/styles/theme.module.css";
+import { getEffectiveHeartbeatItemCount } from "@/lib/utils/heartbeat";
 
 interface StatusIndicatorProps {
 	status: "up" | "degraded" | "down";
@@ -147,25 +148,7 @@ const HeartbeatBarComponent = ({
 		[],
 	);
 
-	/**
-	 * Calculates the effective maximum items to display based on interval.
-	 * Adjusts the count to ensure visibility for different time ranges.
-	 * @param baseMax - Base maximum number of items
-	 * @param currentInterval - Current heartbeat interval
-	 * @returns Adjusted maximum items count
-	 */
-	const getEffectiveMaxItems = (
-		baseMax: number,
-		currentInterval: string,
-	): number => {
-		if (currentInterval === "all") return baseMax;
-		if (currentInterval === "hour") return Math.floor(baseMax / 1.25);
-		if (currentInterval === "day") return Math.floor(baseMax / 1.5);
-		if (currentInterval === "week") return Math.floor(baseMax / 1.75);
-		return baseMax;
-	};
-
-	const effectiveMaxItems = getEffectiveMaxItems(maxItems, interval);
+	const effectiveMaxItems = getEffectiveHeartbeatItemCount(maxItems, interval);
 	const [displayItems, setDisplayItems] = useState<
 		Array<{
 			status: "up" | "degraded" | "down" | "none";
