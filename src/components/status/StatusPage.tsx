@@ -29,6 +29,46 @@ interface MonitorCategoryGroup {
 	monitors: Monitor[];
 }
 
+function getMonitorDisplayStatus(
+	monitor: Monitor,
+	degradedThreshold: number,
+): "up" | "degraded" | "down" {
+	if (!monitor.current_status.is_up) {
+		return "down";
+	}
+
+	if (monitor.history.length > 0) {
+		const latestRecord = monitor.history[monitor.history.length - 1];
+		if (
+			latestRecord.response_time &&
+			latestRecord.response_time * 1000 > degradedThreshold
+		) {
+			return "degraded";
+		}
+	}
+
+	return "up";
+}
+
+function getCategoryDisplayStatus(
+	monitors: Monitor[],
+	degradedThreshold: number,
+): "up" | "degraded" | "down" {
+	let hasDegraded = false;
+
+	for (const monitor of monitors) {
+		const status = getMonitorDisplayStatus(monitor, degradedThreshold);
+		if (status === "down") {
+			return "down";
+		}
+		if (status === "degraded") {
+			hasDegraded = true;
+		}
+	}
+
+	return hasDegraded ? "degraded" : "up";
+}
+
 function getMonitorCategory(monitor: Monitor): string {
 	if (typeof monitor.category === "string" && monitor.category.trim()) {
 		return monitor.category.trim();
@@ -485,11 +525,17 @@ export function StatusPage() {
 			<main className={styles.container}>
 				<section className={styles.statusOverview}>
 					{monitorCategoryGroups.map((group) => {
+						const categoryStatus = getCategoryDisplayStatus(
+							group.monitors,
+							state.degradedThreshold,
+						);
 						return (
 							<section className={styles.categorySection} key={group.name}>
 								<div className={styles.categoryHeader}>
 									<div className={styles.categoryTitle}>
-										<span className={styles.categoryDot} />
+										<span
+											className={`${styles.categoryDot} ${styles[categoryStatus]}`}
+										/>
 										<h2>{group.name}</h2>
 									</div>
 									<span className={styles.categoryCount}>

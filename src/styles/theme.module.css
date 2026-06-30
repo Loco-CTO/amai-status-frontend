@@ -143,6 +143,21 @@
 	flex: 0 0 8px;
 }
 
+.categoryDot.up {
+	background: var(--success);
+	box-shadow: 0 0 10px var(--success);
+}
+
+.categoryDot.degraded {
+	background: var(--warning);
+	box-shadow: 0 0 10px var(--warning);
+}
+
+.categoryDot.down {
+	background: var(--error);
+	box-shadow: 0 0 10px var(--error);
+}
+
 .categoryCount {
 	min-width: 1.45rem;
 	height: 1.45rem;
