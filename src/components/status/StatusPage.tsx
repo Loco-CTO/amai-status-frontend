@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useMemo, useRef } from "react";
 import styles from "@/styles/theme.module.css";
 import { StatusHeader } from "./StatusHeader";
 import { StatusItem } from "./StatusItem";
@@ -21,6 +21,40 @@ import type { HoveredMonitorInfo } from "@/types/ui";
 import type { ApiStatusResponse } from "@/lib/services/apiService";
 import axios from "axios";
 import packageJson from "../../../package.json";
+
+const DEFAULT_CATEGORY = "Services";
+
+interface MonitorCategoryGroup {
+	name: string;
+	monitors: Monitor[];
+}
+
+function getMonitorCategory(monitor: Monitor): string {
+	if (typeof monitor.category === "string" && monitor.category.trim()) {
+		return monitor.category.trim();
+	}
+	return DEFAULT_CATEGORY;
+}
+
+function groupMonitorsByCategory(monitors: Monitor[]): MonitorCategoryGroup[] {
+	const groups: MonitorCategoryGroup[] = [];
+	const groupIndexes = new Map<string, number>();
+
+	for (const monitor of monitors) {
+		const category = getMonitorCategory(monitor);
+		const existingIndex = groupIndexes.get(category);
+
+		if (existingIndex !== undefined) {
+			groups[existingIndex].monitors.push(monitor);
+			continue;
+		}
+
+		groupIndexes.set(category, groups.length);
+		groups.push({ name: category, monitors: [monitor] });
+	}
+
+	return groups;
+}
 
 /**
  * Main status page component that displays monitor status and heartbeat data.
@@ -429,6 +463,10 @@ export function StatusPage() {
 		state.language,
 		getStatusLabel,
 	);
+	const monitorCategoryGroups = useMemo(
+		() => groupMonitorsByCategory(state.monitors),
+		[state.monitors],
+	);
 
 	if (!state.mounted) {
 		return null;
@@ -446,33 +484,53 @@ export function StatusPage() {
 
 			<main className={styles.container}>
 				<section className={styles.statusOverview}>
-					{state.monitors.map((monitor) => {
-						const { text, status } = getStatusIndicatorText(monitor);
-						const uptime = getHeartbeatUptime(monitor);
-						const heartbeat = getHeartbeatData(monitor);
-						const timestamps = getHeartbeatTimestamps(monitor);
-						const responseTimes = getHeartbeatResponseTimes(monitor);
-						const metadata = getHeartbeatMetadata(monitor);
-						const interval = state.heartbeatIntervals[monitor.name] || "all";
+					{monitorCategoryGroups.map((group) => {
 						return (
-							<StatusItem
-								key={monitor.name}
-								monitor={monitor}
-								language={state.language}
-								heartbeat={heartbeat}
-								timestamps={timestamps}
-								responseTimes={responseTimes}
-								metadata={metadata}
-								uptime={uptime}
-								statusText={text}
-								statusValue={status}
-								interval={interval}
-								maxItems={state.heartbeatItemCount}
-								onIntervalChange={createHeartbeatIntervalChangeHandler(monitor)}
-								onHeartbeatHover={handleHeartbeatHover}
-								onTooltipMouseMove={handleTooltipMouseMove}
-								onTooltipMouseLeave={handleTooltipMouseLeave}
-							/>
+							<section className={styles.categorySection} key={group.name}>
+								<div className={styles.categoryHeader}>
+									<div className={styles.categoryTitle}>
+										<span className={styles.categoryDot} />
+										<h2>{group.name}</h2>
+									</div>
+									<span className={styles.categoryCount}>
+										{group.monitors.length}
+									</span>
+								</div>
+								<div className={styles.categoryItems}>
+									{group.monitors.map((monitor) => {
+										const { text, status } = getStatusIndicatorText(monitor);
+										const uptime = getHeartbeatUptime(monitor);
+										const heartbeat = getHeartbeatData(monitor);
+										const timestamps = getHeartbeatTimestamps(monitor);
+										const responseTimes = getHeartbeatResponseTimes(monitor);
+										const metadata = getHeartbeatMetadata(monitor);
+										const interval =
+											state.heartbeatIntervals[monitor.name] || "all";
+										return (
+											<StatusItem
+												key={monitor.name}
+												monitor={monitor}
+												language={state.language}
+												heartbeat={heartbeat}
+												timestamps={timestamps}
+												responseTimes={responseTimes}
+												metadata={metadata}
+												uptime={uptime}
+												statusText={text}
+												statusValue={status}
+												interval={interval}
+												maxItems={state.heartbeatItemCount}
+												onIntervalChange={createHeartbeatIntervalChangeHandler(
+													monitor,
+												)}
+												onHeartbeatHover={handleHeartbeatHover}
+												onTooltipMouseMove={handleTooltipMouseMove}
+												onTooltipMouseLeave={handleTooltipMouseLeave}
+											/>
+										);
+									})}
+								</div>
+							</section>
 						);
 					})}
 				</section>
