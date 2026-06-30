@@ -405,8 +405,7 @@ export function StatusPage() {
 		degradedThreshold: state.degradedThreshold,
 		language: state.language,
 	});
-	const { getStatusIndicatorText, getUptimePercentage, getStatusLabel } =
-		statusComputation;
+	const { getStatusIndicatorText, getStatusLabel } = statusComputation;
 
 	// Use heartbeat computation hook
 	const heartbeatComputation = useHeartbeatComputation({
@@ -421,6 +420,7 @@ export function StatusPage() {
 		getHeartbeatData,
 		getHeartbeatTimestamps,
 		getHeartbeatResponseTimes,
+		getHeartbeatUptime,
 		getHeartbeatMetadata,
 	} = heartbeatComputation;
 
@@ -448,7 +448,7 @@ export function StatusPage() {
 				<section className={styles.statusOverview}>
 					{state.monitors.map((monitor) => {
 						const { text, status } = getStatusIndicatorText(monitor);
-						const uptime = getUptimePercentage(monitor);
+						const uptime = getHeartbeatUptime(monitor);
 						const heartbeat = getHeartbeatData(monitor);
 						const timestamps = getHeartbeatTimestamps(monitor);
 						const responseTimes = getHeartbeatResponseTimes(monitor);
