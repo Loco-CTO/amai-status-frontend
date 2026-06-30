@@ -1,4 +1,4 @@
-import type { AggregatedHeartbeatNode } from "./models";
+import type { AggregatedHeartbeatNode, Monitor } from "./models";
 
 export interface ConfigResponse {
 	configuration: {
@@ -10,7 +10,7 @@ export interface ConfigResponse {
 
 export interface StatusResponse {
 	timestamp: string;
-	monitors: Record<string, unknown>[];
+	monitors: Monitor[];
 }
 
 export interface VersionResponse {
