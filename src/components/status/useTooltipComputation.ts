@@ -52,8 +52,10 @@ export function useTooltipComputation(
 			if (!hoveredMonitor) return null;
 
 			const timeDisplay =
-				hoveredMonitor.typeLabel ||
-				formatLocalDateTime(hoveredMonitor.timestamp || new Date(), language);
+				hoveredMonitor.interval === "all"
+					? formatLocalDateTime(hoveredMonitor.timestamp || new Date(), language)
+					: hoveredMonitor.typeLabel ||
+						formatLocalDateTime(hoveredMonitor.timestamp || new Date(), language);
 
 			const showIssues =
 				hoveredMonitor.interval &&
